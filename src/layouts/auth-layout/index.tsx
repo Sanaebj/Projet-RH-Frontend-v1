@@ -5,7 +5,7 @@ import Link from '@mui/material/Link';
 import ButtonBase from '@mui/material/ButtonBase';
 import Typography from '@mui/material/Typography';
 import Image from 'components/base/Image';
-import Logo from 'assets/images/logo.png';
+import Logo from 'assets/images/img.ico';
 
 const AuthLayout = ({ children }: PropsWithChildren) => {
   return (

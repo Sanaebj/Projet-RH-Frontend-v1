@@ -10,7 +10,7 @@ import IconifyIcon from 'components/base/IconifyIcon';
 import LanguageSelect from './LanguageSelect';
 import ProfileMenu from './ProfileMenu';
 import Image from 'components/base/Image';
-import LogoImg from 'assets/images/logo.png';
+import LogoImg from 'assets/images/img.ico';
 
 interface TopbarProps {
   isClosing: boolean;

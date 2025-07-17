@@ -103,7 +103,7 @@ const ProfileMenu = () => {
             <Avatar src={ProfileImage} sx={{ mr: 1, height: 42, width: 42 }} />
             <Stack direction="column">
               <Typography variant="body2" color="text.primary" fontWeight={600}>
-                Alex Manda
+                Sanae Bounajma
               </Typography>
               <Typography variant="caption" color="text.secondary" fontWeight={400}>
                 alex@example.com

@@ -10,7 +10,7 @@ import ListItem from './list-items/ListItem';
 import CollapseListItem from './list-items/CollapseListItem';
 import Image from 'components/base/Image';
 import IconifyIcon from 'components/base/IconifyIcon';
-import LogoImg from 'assets/images/logo.png';
+import LogoImg from 'assets/images/img.ico';
 import sitemap from 'routes/sitemap';
 
 const DrawerItems = () => {
@@ -30,7 +30,7 @@ const DrawerItems = () => {
         zIndex={1000}
       >
         <ButtonBase component={Link} href="/" disableRipple>
-          <Image src={LogoImg} alt="logo" height={52} width={52} sx={{ mr: 1.75 }} />
+          <Image src={LogoImg} alt="logo" height={70} width={70} sx={{ mr: 2.75 }} />
           <Box>
             <Typography
               mt={0.25}
@@ -40,7 +40,7 @@ const DrawerItems = () => {
               letterSpacing={1}
               fontFamily={fontFamily.poppins}
             >
-              Venus
+              RH
             </Typography>
             <Typography
               mt={-0.35}
@@ -50,7 +50,7 @@ const DrawerItems = () => {
               fontWeight={500}
               fontFamily={fontFamily.poppins}
             >
-              Dashboard
+              Manager
             </Typography>
           </Box>
         </ButtonBase>
