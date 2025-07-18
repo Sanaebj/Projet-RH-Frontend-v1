@@ -7,10 +7,13 @@ import Splash from 'components/loader/Splash';
 import PageLoader from 'components/loader/PageLoader';
 import AuthLayout from 'layouts/auth-layout';
 
+// Lazy loading
 const App = lazy(() => import('App'));
 const Dashboard = lazy(() => import('pages/dashboard/Dashbaord'));
 const Signin = lazy(() => import('pages/authentication/Signin'));
 const Signup = lazy(() => import('pages/authentication/Signup'));
+const EmployeList = lazy(() => import('pages/employes/EmployeList'));
+const EmployeCreate = lazy(() => import('../pages/employes/EmployeCreate'));
 
 const router = createBrowserRouter(
   [
@@ -34,6 +37,14 @@ const router = createBrowserRouter(
             {
               index: true,
               element: <Dashboard />,
+            },
+            {
+              path: 'employes',
+              element: <EmployeList />,
+            },
+            {
+              path: 'employes/add',
+              element: <EmployeCreate />,
             },
           ],
         },

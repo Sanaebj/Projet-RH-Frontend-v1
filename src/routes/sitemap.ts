@@ -30,7 +30,7 @@ const sitemap: MenuItem[] = [
   {
     id: 'employes',
     subheader: 'Employes',
-    path: '/employes!',
+    path: '/employes',
     icon: 'ic:baseline-show-chart',
   },
   {
