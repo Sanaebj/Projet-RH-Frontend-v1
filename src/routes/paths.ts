@@ -7,10 +7,10 @@ export const rootPaths = {
 
 export default {
   dashboard: `/${rootPaths.pageRoot}/dashboard`,
-  activity: `/${rootPaths.pageRoot}/activity`,
-  library: `/${rootPaths.pageRoot}/library`,
-  schedules: `/${rootPaths.pageRoot}/schedules`,
-  payouts: `/${rootPaths.pageRoot}/payouts`,
+  employes: `/${rootPaths.pageRoot}/employes`,
+  reunions: `/${rootPaths.pageRoot}/reunions`,
+  demandes: `/${rootPaths.pageRoot}/demandes`,
+  pointage: `/${rootPaths.pageRoot}/pointage`,
   settings: `/${rootPaths.pageRoot}/settings`,
 
   signin: `/${rootPaths.authRoot}/signin`,

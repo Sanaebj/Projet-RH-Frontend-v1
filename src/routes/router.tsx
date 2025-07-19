@@ -14,6 +14,8 @@ const Signin = lazy(() => import('pages/authentication/Signin'));
 const Signup = lazy(() => import('pages/authentication/Signup'));
 const EmployeList = lazy(() => import('pages/employes/EmployeList'));
 const EmployeCreate = lazy(() => import('../pages/employes/EmployeCreate'));
+const ReunionCreate = lazy(() => import('../pages/Reunions/ReunionCreate'));
+const ReunionList = lazy(() => import('../pages/Reunions/ReunionList'));
 
 const router = createBrowserRouter(
   [
@@ -46,7 +48,16 @@ const router = createBrowserRouter(
               path: 'employes/add',
               element: <EmployeCreate />,
             },
+            {
+              path: 'reunions',
+              element: <ReunionList />,
+            },
+            {
+              path: 'reunions/add',
+              element: <ReunionCreate />,
+            },
           ],
+
         },
         {
           path: rootPaths.authRoot,

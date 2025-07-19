@@ -36,14 +36,13 @@ const sitemap: MenuItem[] = [
   {
     id: 'reunions',
     subheader: 'Réunions',
-    path: 'reunions',
+    path: '/reunions',
     icon: 'material-symbols:local-library-outline',
   },
   {
     id: 'authentication',
     subheader: 'Authentication',
     icon: 'ic:round-security',
-    active: true,
     items: [
       {
         name: 'Sign In',
