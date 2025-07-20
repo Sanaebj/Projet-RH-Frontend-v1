@@ -8,7 +8,11 @@ export const getAllEmployes = async (): Promise<Employe[]> => {
   return response.data;
 };
 
-export const createEmploye = async (employe: Employe): Promise<Employe> => {
-  const response = await axios.post<Employe>(API_URL, employe);
+export const createEmploye = async (formData: FormData): Promise<Employe> => {
+  const response = await axios.post<Employe>(API_URL, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
   return response.data;
 };
