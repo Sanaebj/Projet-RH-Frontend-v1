@@ -18,50 +18,85 @@ import {
     ResponsiveContainer,
     CartesianGrid,
 } from 'recharts';
-
-const meetings = [
-    { date: '18 Juillet 2025', title: 'Réunion RH mensuelle' },
-    { date: '25 Juillet 2025', title: 'Entretien annuel - Équipe Dev' },
-    { date: '01 Août 2025', title: 'Réunion sécurité interne' },
-];
-
-const monthlyMeetings = [
-    { month: 'Juillet 2025', count: 2 },
-    { month: 'Août 2025', count: 1 },
-];
+import { useEffect, useState } from 'react';
+import { getUpcomingReunions } from '../../../../services/reunionService';
+import { Reunion } from '../../../../types/Reunion';
+import dayjs from 'dayjs';
+import 'dayjs/locale/fr';
+dayjs.locale('fr');
 
 const MeetingsListCard = () => {
+    const [reunions, setReunions] = useState<Reunion[]>([]);
+    const [monthlyMeetings, setMonthlyMeetings] = useState<{ month: string; count: number }[]>([]);
+
+    useEffect(() => {
+        const fetchReunions = async () => {
+            try {
+                const data = await getUpcomingReunions();
+                setReunions(data);
+
+                // Regrouper par mois pour le graphique
+                const countByMonth: { [key: string]: number } = {};
+                data.forEach((reunion: Reunion) => {
+                    if (reunion.dateHeure) {
+                        const parsedDate = dayjs(reunion.dateHeure);
+                        const month = parsedDate.format('MMMM YYYY');
+                        countByMonth[month] = (countByMonth[month] || 0) + 1;
+                    }
+                });
+
+                // Trier les mois dans l'ordre chronologique
+                const monthlyData = Object.entries(countByMonth)
+                    .map(([month, count]) => ({ month, count }))
+                    .sort(
+                        (a, b) =>
+                            dayjs(a.month, 'MMMM YYYY').toDate().getTime() -
+                            dayjs(b.month, 'MMMM YYYY').toDate().getTime()
+                    );
+
+                setMonthlyMeetings(monthlyData);
+            } catch (error) {
+                console.error('Erreur lors du chargement des réunions :', error);
+            }
+        };
+
+        fetchReunions();
+    }, []);
+
     return (
         <Card sx={{ height: '100%' }}>
             <CardContent>
-                {/* Titre section 1 */}
                 <Typography variant="h6" gutterBottom>
                     📅 Réunions à venir
                 </Typography>
 
-                {/* Liste des réunions */}
                 <List>
-                    {meetings.map((meeting, index) => (
-                        <ListItem key={index} disablePadding>
-                            <ListItemIcon sx={{ minWidth: 36 }}>
-                                <EventIcon color="primary" />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={meeting.title}
-                                secondary={meeting.date}
-                                primaryTypographyProps={{ fontWeight: 500 }}
-                            />
-                        </ListItem>
-                    ))}
+                    {reunions.length > 0 ? (
+                        reunions.map((meeting, index) => (
+                            <ListItem key={index} disablePadding>
+                                <ListItemIcon sx={{ minWidth: 36 }}>
+                                    <EventIcon color="primary" />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={meeting.titre}
+                                    secondary={dayjs(meeting.dateHeure).format('DD MMMM YYYY à HH:mm')}
+                                    primaryTypographyProps={{ fontWeight: 500 }}
+                                />
+                            </ListItem>
+                        ))
+                    ) : (
+                        <Typography variant="body2" color="text.secondary">
+                            Aucune réunion à venir.
+                        </Typography>
+                    )}
                 </List>
 
-                {/* Séparation */}
                 <Divider sx={{ my: 2 }} />
 
-                {/* Graphique des réunions */}
                 <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
                     📈 Réunions par mois (graphique)
                 </Typography>
+
                 <ResponsiveContainer width="100%" height={200}>
                     <BarChart
                         data={monthlyMeetings}
@@ -71,9 +106,15 @@ const MeetingsListCard = () => {
                         <XAxis dataKey="month" />
                         <YAxis allowDecimals={false} />
                         <Tooltip />
-                        <Bar dataKey="count" fill="#5b21b6" radius={[4, 4, 0, 0]} />
+                        <Bar
+                            dataKey="count"
+                            fill="#5b21b6"
+                            radius={[4, 4, 0, 0]}
+                            label={{ position: 'top', fill: '#111', fontSize: 13 }}
+                        />
                     </BarChart>
                 </ResponsiveContainer>
+
             </CardContent>
         </Card>
     );

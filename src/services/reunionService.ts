@@ -5,3 +5,7 @@ export const getAllReunions = async (): Promise<Reunion[]> => {
     const response = await axios.get<Reunion[]>('http://localhost:2233/api/reunions');
     return response.data;
 };
+export const getUpcomingReunions = async (): Promise<Reunion[]> => {
+    const response = await axios.get<Reunion[]>('http://localhost:2233/api/reunions/upcoming');
+    return response.data;
+};
