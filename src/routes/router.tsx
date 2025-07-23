@@ -6,6 +6,7 @@ import MainLayout from 'layouts/main-layout';
 import Splash from 'components/loader/Splash';
 import PageLoader from 'components/loader/PageLoader';
 import AuthLayout from 'layouts/auth-layout';
+const ListeDemandes = lazy(() => import('pages/Documents/ListeDemandes'));
 
 // Lazy loading
 const App = lazy(() => import('App'));
@@ -56,6 +57,11 @@ const router = createBrowserRouter(
               path: 'reunions/add',
               element: <ReunionCreate />,
             },
+            {
+              path: 'demandes',
+              element: <ListeDemandes />,
+            },
+            
           ],
 
         },

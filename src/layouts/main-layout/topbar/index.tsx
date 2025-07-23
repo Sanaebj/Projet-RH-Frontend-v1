@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Badge from '@mui/material/Badge';
@@ -6,11 +7,31 @@ import TextField from '@mui/material/TextField';
 import ButtonBase from '@mui/material/ButtonBase';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
+import axios from 'axios';
+
 import IconifyIcon from 'components/base/IconifyIcon';
 import LanguageSelect from './LanguageSelect';
 import ProfileMenu from './ProfileMenu';
 import Image from 'components/base/Image';
 import LogoImg from 'assets/images/img.ico';
+
+// Type Employe défini strictement
+export type Employe = {
+  id?: number;
+  nom: string;
+  prenom: string;
+  email: string;
+  telephone: string;
+  adresse: string;
+  photo: string;
+  matricule?: string;
+  service: string;
+  poste: string;
+  salaire: string;
+  genre: 'HOMME' | 'FEMME';
+  dateCreation?: string;
+  dateEmbauche: string;
+};
 
 interface TopbarProps {
   isClosing: boolean;
@@ -18,12 +39,39 @@ interface TopbarProps {
   setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+interface DemandeDocument {
+  id: number;
+  type: string;
+  dateDemande: string;
+  documentPret: boolean;
+  commentaire: string | null;
+  employe: Employe | null;  // ici on utilise le type Employe, pas any
+}
+
 const Topbar = ({ isClosing, mobileOpen, setMobileOpen }: TopbarProps) => {
+  const [notificationCount, setNotificationCount] = useState(0);
+
   const handleDrawerToggle = () => {
     if (!isClosing) {
       setMobileOpen(!mobileOpen);
     }
   };
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get<DemandeDocument[]>('http://localhost:2233/api/demandes-documents/non-vues');
+        setNotificationCount(response.data.length);
+      } catch (error) {
+        console.error('Erreur lors du chargement des notifications :', error);
+      }
+    };
+
+    fetchNotifications();
+
+    const interval = setInterval(fetchNotifications, 30000); // Mise à jour toutes les 30s
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <Stack
@@ -78,7 +126,7 @@ const Topbar = ({ isClosing, mobileOpen, setMobileOpen }: TopbarProps) => {
       <Stack spacing={{ xs: 1, sm: 2 }} alignItems="center">
         <LanguageSelect />
         <IconButton size="large">
-          <Badge badgeContent={2} color="error">
+          <Badge badgeContent={notificationCount} color="error">
             <IconifyIcon icon="ic:outline-notifications-none" />
           </Badge>
         </IconButton>

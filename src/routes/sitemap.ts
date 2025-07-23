@@ -59,7 +59,7 @@ const sitemap: MenuItem[] = [
   {
     id: 'demandes',
     subheader: 'Demandes',
-    path: '#!',
+    path: '/demandes', 
     icon: 'ic:outline-calendar-today',
   },
   {

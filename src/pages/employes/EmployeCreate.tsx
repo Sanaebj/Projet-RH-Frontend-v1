@@ -24,13 +24,11 @@ type EmployeForm = Omit<
     telephone: string;
     adresse: string;
     photo: string;
-    motDePasseHash: string;
     matricule: string;
     service: string;
     poste: string;
     salaire: string;
     genre: 'HOMME' | 'FEMME';
-    statut: 'ACTIF' | 'INACTIF';
     dateCreation: string;
     dateEmbauche: string;
   },
@@ -46,12 +44,10 @@ const EmployeCreate = () => {
     email: '',
     telephone: '',
     adresse: '',
-    motDePasseHash: '',
     service: '',
     poste: '',
     salaire: '0',
     genre: 'HOMME',
-    statut: 'ACTIF',
     dateEmbauche: '',
   });
 
@@ -99,7 +95,6 @@ const EmployeCreate = () => {
       'telephone',
       'adresse',
       'dateEmbauche',
-      'motDePasseHash',
       'service',
       'poste',
       'salaire',
@@ -233,21 +228,7 @@ const EmployeCreate = () => {
             </FormControl>
           </Grid>
 
-          <Grid item xs={6}>
-            <FormControl fullWidth>
-              <InputLabel>Statut</InputLabel>
-              <Select
-                name="statut"
-                value={employe.statut}
-                onChange={handleSelectChange}
-                label="Statut"
-              >
-                <MenuItem value="ACTIF">Actif</MenuItem>
-                <MenuItem value="INACTIF">Inactif</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-
+       
           <Grid item xs={6}>
             <TextField
               label="Date d'embauche"
@@ -260,18 +241,7 @@ const EmployeCreate = () => {
             />
           </Grid>
 
-          <Grid item xs={12}>
-            <TextField
-              label="Mot de passe"
-              name="motDePasseHash"
-              value={employe.motDePasseHash}
-              onChange={handleInputChange}
-              fullWidth
-              type="password"
-            />
-          </Grid>
-
-          <Grid item xs={12}>
+                <Grid item xs={12}>
             <Button variant="contained" component="label" fullWidth>
               Télécharger la photo
               <input
