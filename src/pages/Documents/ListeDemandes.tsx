@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
+  Box,
   Table,
   TableBody,
   TableCell,
@@ -55,10 +56,11 @@ const ListeDemandes: React.FC = () => {
   };
 
   return (
-    <TableContainer component={Paper} sx={{ maxWidth: 900, margin: 'auto', mt: 4, p: 2 }}>
-      <Typography variant="h5" component="h2" gutterBottom>
-        Liste des demandes de documents
-      </Typography>
+      <>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Typography variant="h5">Liste des demandes de documents</Typography>
+        </Box>
+    <TableContainer component={Paper} sx={{ maxWidth: 1400,margin: 'auto', mt: 4, p: 2 }}>
       <Table aria-label="liste des demandes">
         <TableHead>
           <TableRow>
@@ -99,6 +101,7 @@ const ListeDemandes: React.FC = () => {
         </TableBody>
       </Table>
     </TableContainer>
+        </>
   );
 };
 
