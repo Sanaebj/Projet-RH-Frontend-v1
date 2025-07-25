@@ -17,6 +17,8 @@ const EmployeList = lazy(() => import('pages/employes/EmployeList'));
 const EmployeCreate = lazy(() => import('../pages/employes/EmployeCreate'));
 const ReunionCreate = lazy(() => import('../pages/Reunions/ReunionCreate'));
 const ReunionList = lazy(() => import('../pages/Reunions/ReunionList'));
+const PointageTable = lazy(() => import('pages/absences/PointageTable.tsx'));
+
 
 const router = createBrowserRouter(
   [
@@ -61,6 +63,11 @@ const router = createBrowserRouter(
               path: 'demandes',
               element: <ListeDemandes />,
             },
+            {
+              path: 'pointage',
+              element: <PointageTable />,
+            },
+
             
           ],
 
