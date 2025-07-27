@@ -11,9 +11,16 @@ import TextField from '@mui/material/TextField';
 import Checkbox from '@mui/material/Checkbox';
 import IconifyIcon from 'components/base/IconifyIcon';
 import paths from 'routes/paths';
+import axios from 'axios';
 
 interface User {
-  [key: string]: string;
+  email: string;
+  password: string;
+}
+
+// ✅ Création d'un type guard pour éviter AxiosError direct
+function isAxiosError(error: unknown): error is { response?: { data?: string } } {
+  return typeof error === 'object' && error !== null && 'response' in error;
 }
 
 const Signin = () => {
@@ -24,9 +31,31 @@ const Signin = () => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(user);
+
+    try {
+      const response = await axios.post('http://localhost:8080/auth/login', {
+        username: user.email, // backend attend "username"
+        password: user.password,
+      });
+
+      const token = response.data;
+
+      if (typeof token === 'string') {
+        localStorage.setItem('token', token);
+        alert('Connexion réussie ! Token enregistré.');
+      } else {
+        alert("Le token reçu n'est pas valide.");
+      }
+
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        alert(error.response?.data || 'Erreur lors de la connexion');
+      } else {
+        alert('Erreur inconnue');
+      }
+    }
   };
 
   return (

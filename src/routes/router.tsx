@@ -12,7 +12,6 @@ const ListeDemandes = lazy(() => import('pages/Documents/ListeDemandes'));
 const App = lazy(() => import('App'));
 const Dashboard = lazy(() => import('pages/dashboard/Dashbaord'));
 const Signin = lazy(() => import('pages/authentication/Signin'));
-const Signup = lazy(() => import('pages/authentication/Signup'));
 const EmployeList = lazy(() => import('pages/employes/EmployeList'));
 const EmployeCreate = lazy(() => import('../pages/employes/EmployeCreate'));
 const ReunionCreate = lazy(() => import('../pages/Reunions/ReunionCreate'));
@@ -84,10 +83,7 @@ const router = createBrowserRouter(
               path: paths.signin,
               element: <Signin />,
             },
-            {
-              path: paths.signup,
-              element: <Signup />,
-            },
+          
           ],
         },
       ],
