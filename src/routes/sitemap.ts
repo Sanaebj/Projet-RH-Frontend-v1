@@ -49,17 +49,12 @@ const sitemap: MenuItem[] = [
         pathName: 'signin',
         path: paths.signin,
       },
-      {
-        name: 'Sign Up',
-        pathName: 'signup',
-        path: paths.signup,
-      },
     ],
   },
   {
     id: 'demandes',
     subheader: 'Demandes',
-    path: '/demandes', 
+    path: '/demandes',
     icon: 'ic:outline-calendar-today',
   },
   {
