@@ -12,167 +12,171 @@ import Checkbox from '@mui/material/Checkbox';
 import IconifyIcon from 'components/base/IconifyIcon';
 import paths from 'routes/paths';
 import axios from 'axios';
+import * as jwtDecodeRaw from 'jwt-decode';
+import jwtDecode from 'jwt-decode';
+
 
 interface User {
-  email: string;
-  password: string;
+    username: string;
+    password: string;
 }
 
-// ✅ Création d'un type guard pour éviter AxiosError direct
+interface JwtPayload {
+    sub: string;
+    role: string;
+    exp: number;
+}
+
 function isAxiosError(error: unknown): error is { response?: { data?: string } } {
-  return typeof error === 'object' && error !== null && 'response' in error;
+    return typeof error === 'object' && error !== null && 'response' in error;
 }
 
 const Signin = () => {
-  const [user, setUser] = useState<User>({ email: '', password: '' });
-  const [showPassword, setShowPassword] = useState(false);
+    const [user, setUser] = useState<User>({ username: '', password: '' });
+    const [showPassword, setShowPassword] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
-  };
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setUser({ ...user, [e.target.name]: e.target.value });
+    };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setErrorMessage('');
 
-    try {
-      const response = await axios.post('http://localhost:8080/auth/login', {
-        username: user.email, // backend attend "username"
-        password: user.password,
-      });
+        try {
+            const response = await axios.post('' +
+                '', {
+                username: user.username,
+                password: user.password,
+            });
 
-      const token = response.data;
+            const token = response.data;
 
-      if (typeof token === 'string') {
-        localStorage.setItem('token', token);
-        alert('Connexion réussie ! Token enregistré.');
-      } else {
-        alert("Le token reçu n'est pas valide.");
-      }
+            if (typeof token === 'string') {
+                localStorage.setItem('token', token);
 
-    } catch (error: unknown) {
-      if (isAxiosError(error)) {
-        alert(error.response?.data || 'Erreur lors de la connexion');
-      } else {
-        alert('Erreur inconnue');
-      }
-    }
-  };
+                const decoded: JwtPayload = jwtDecode(token);
+                const userRole = decoded.role;
 
-  return (
-    <>
-      <Typography align="center" variant="h4">
-        Sign In
-      </Typography>
-      <Typography mt={1.5} align="center" variant="body2">
-        Welcome back! Let's continue with,
-      </Typography>
+                if (userRole === 'ADMIN') {
+                    window.location.href = '/admin/dashboard';
+                } else {
+                    window.location.href = '/dashboard';
+                }
 
-      <Stack mt={3} spacing={1.75} width={1}>
-        <Button
-          variant="contained"
-          color="secondary"
-          fullWidth
-          startIcon={<IconifyIcon icon="logos:google-icon" />}
-          sx={{ bgcolor: 'info.main', '&:hover': { bgcolor: 'info.main' } }}
-        >
-          Google
-        </Button>
-        <Button
-          variant="contained"
-          color="secondary"
-          fullWidth
-          startIcon={<IconifyIcon icon="logos:apple" sx={{ mb: 0.5 }} />}
-          sx={{ bgcolor: 'info.main', '&:hover': { bgcolor: 'info.main' } }}
-        >
-          Apple
-        </Button>
-      </Stack>
+            } else {
+                setErrorMessage("Le token reçu n'est pas valide.");
+            }
 
-      <Divider sx={{ my: 4 }}>or Signin with</Divider>
+        } catch (error: unknown) {
+            if (isAxiosError(error)) {
+                setErrorMessage(error.response?.data || 'Erreur lors de la connexion');
+            } else {
+                setErrorMessage('Erreur inconnue');
+            }
+        }
+    };
 
-      <Stack component="form" mt={3} onSubmit={handleSubmit} direction="column" gap={2}>
-        <TextField
-          id="email"
-          name="email"
-          type="email"
-          value={user.email}
-          onChange={handleInputChange}
-          variant="filled"
-          placeholder="Your Email"
-          autoComplete="email"
-          fullWidth
-          autoFocus
-          required
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <IconifyIcon icon="ic:baseline-alternate-email" />
-              </InputAdornment>
-            ),
-          }}
-        />
-        <TextField
-          id="password"
-          name="password"
-          type={showPassword ? 'text' : 'password'}
-          value={user.password}
-          onChange={handleInputChange}
-          variant="filled"
-          placeholder="Your Password"
-          autoComplete="current-password"
-          fullWidth
-          required
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <IconifyIcon icon="ic:outline-lock" />
-              </InputAdornment>
-            ),
-            endAdornment: (
-              <InputAdornment
-                position="end"
-                sx={{
-                  opacity: user.password ? 1 : 0,
-                  pointerEvents: user.password ? 'auto' : 'none',
-                }}
-              >
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={() => setShowPassword(!showPassword)}
-                  sx={{ border: 'none', bgcolor: 'transparent !important' }}
-                  edge="end"
-                >
-                  <IconifyIcon
-                    icon={showPassword ? 'ic:outline-visibility' : 'ic:outline-visibility-off'}
-                    color="neutral.light"
-                  />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
+    return (
+        <>
+            <Typography align="center" variant="h4">
+                Connexion
+            </Typography>
+            <Typography mt={1.5} align="center" variant="body2">
+                Bienvenue, veuillez vous connecter
+            </Typography>
 
-        <Stack mt={-1.25} alignItems="center" justifyContent="space-between">
-          <FormControlLabel
-            control={<Checkbox id="checkbox" name="checkbox" size="medium" color="primary" />}
-            label="Remember me"
-            sx={{ ml: -0.75 }}
-          />
-          <Link href="#!" fontSize="body2.fontSize">
-            Forgot password?
-          </Link>
-        </Stack>
+            <Divider sx={{ my: 4 }}>Connexion manuelle</Divider>
 
-        <Button type="submit" variant="contained" size="medium" fullWidth>
-          Sign In
-        </Button>
-      </Stack>
+            <Stack component="form" mt={3} onSubmit={handleSubmit} direction="column" gap={2}>
+                <TextField
+                    id="username"
+                    name="username"
+                    type="text"
+                    value={user.username}
+                    onChange={handleInputChange}
+                    variant="filled"
+                    placeholder="Nom d'utilisateur"
+                    autoComplete="username"
+                    fullWidth
+                    autoFocus
+                    required
+                    InputProps={{
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <IconifyIcon icon="ic:baseline-person" />
+                            </InputAdornment>
+                        ),
+                    }}
+                />
+                <TextField
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={user.password}
+                    onChange={handleInputChange}
+                    variant="filled"
+                    placeholder="Mot de passe"
+                    autoComplete="current-password"
+                    fullWidth
+                    required
+                    InputProps={{
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <IconifyIcon icon="ic:outline-lock" />
+                            </InputAdornment>
+                        ),
+                        endAdornment: (
+                            <InputAdornment
+                                position="end"
+                                sx={{
+                                    opacity: user.password ? 1 : 0,
+                                    pointerEvents: user.password ? 'auto' : 'none',
+                                }}
+                            >
+                                <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    edge="end"
+                                >
+                                    <IconifyIcon
+                                        icon={showPassword ? 'ic:outline-visibility' : 'ic:outline-visibility-off'}
+                                        color="neutral.light"
+                                    />
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
+                />
 
-      <Typography mt={5} variant="body2" color="text.secondary" align="center" letterSpacing={0.25}>
-        Don't have an account? <Link href={paths.signup}>Signup</Link>
-      </Typography>
-    </>
-  );
+                <Stack mt={-1.25} alignItems="center" justifyContent="space-between">
+                    <FormControlLabel
+                        control={<Checkbox id="checkbox" name="checkbox" size="medium" color="primary" />}
+                        label="Se souvenir de moi"
+                        sx={{ ml: -0.75 }}
+                    />
+                    <Link href="#!" fontSize="body2.fontSize">
+                        Mot de passe oublié ?
+                    </Link>
+                </Stack>
+
+                {errorMessage && (
+                    <Typography color="error" variant="body2" align="center">
+                        ❌ {errorMessage}
+                    </Typography>
+                )}
+
+                <Button type="submit" variant="contained" size="medium" fullWidth>
+                    Connexion
+                </Button>
+            </Stack>
+
+            <Typography mt={5} variant="body2" color="text.secondary" align="center" letterSpacing={0.25}>
+                Pas encore de compte ? <Link href={paths.signup}>Créer un compte</Link>
+            </Typography>
+        </>
+    );
 };
 
 export default Signin;
