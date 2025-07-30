@@ -12,8 +12,15 @@ const Spent = () => {
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
-    setLoading(true);  // on démarre le chargement
-    axios.get<number>("http://localhost:2233/api/employes/count")
+    const token = localStorage.getItem('token');
+  
+    setLoading(true);  // démarre le chargement
+  
+    axios.get<number>("http://localhost:2233/api/employes/count", {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : '',
+      },
+    })
     .then(response => {
         setEmployeCount(response.data);
         setError("");
@@ -25,6 +32,7 @@ const Spent = () => {
         setLoading(false);
       });
   }, []);
+  
   
 
   return (

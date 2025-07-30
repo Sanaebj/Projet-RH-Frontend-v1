@@ -75,27 +75,27 @@ const EmployeCreate = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-  
-    if (!employe.salaire || isNaN(Number(employe.salaire)) || Number(employe.salaire) <= 0) {
-      alert('Veuillez saisir un salaire valide supérieur à 0');
-      return;
-    }
-  
-    try {
-      // Cast en ajoutant les champs manquants requis par le backend
-      const employeToSend = {
-        ...employe,
-        photo: '' // valeur vide si aucune photo gérée
-      };
-  
-      await createEmploye(employeToSend);
-      navigate('/employes');
-    } catch (error) {
-      console.error("Erreur lors de la création de l'employé", error);
-    }
-  };
-  
+  e.preventDefault();
+
+  if (!employe.salaire || isNaN(Number(employe.salaire)) || Number(employe.salaire) <= 0) {
+    alert('Veuillez saisir un salaire valide supérieur à 0');
+    return;
+  }
+
+  try {
+    // Cast en ajoutant les champs manquants requis par le backend
+    const employeToSend = {
+      ...employe,
+      photo: '' // valeur vide si aucune photo gérée
+    };
+
+    await createEmploye(employeToSend);
+    navigate('/employes');
+  } catch (error) {
+    console.error("Erreur lors de la création de l'employé", error);
+  }
+};
+
   return (
     <Paper elevation={3} sx={{ p: 4, maxWidth: 600, mx: 'auto', mt: 4 }}>
       <Typography variant="h5" gutterBottom>

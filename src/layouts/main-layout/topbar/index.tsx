@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';  
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Badge from '@mui/material/Badge';
@@ -50,7 +50,7 @@ interface DemandeDocument {
   documentPret: boolean;
   commentaire: string | null;
   employe: Employe | null;
-  vue?: boolean; // local flag to track viewed notifications
+  vue?: boolean;
 }
 
 const Topbar = ({ isClosing, mobileOpen, setMobileOpen }: TopbarProps) => {
@@ -58,7 +58,6 @@ const Topbar = ({ isClosing, mobileOpen, setMobileOpen }: TopbarProps) => {
   const [notificationCount, setNotificationCount] = useState(0);
   const [notifications, setNotifications] = useState<DemandeDocument[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [isBadgeVisible, setIsBadgeVisible] = useState(true);
 
   const open = Boolean(anchorEl);
 
@@ -68,15 +67,12 @@ const Topbar = ({ isClosing, mobileOpen, setMobileOpen }: TopbarProps) => {
 
   const handleNotificationClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
-    // Hide badge when user opens the notification menu
-    setIsBadgeVisible(false);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
   };
 
-  // Gère le clic sur une notification
   const handleNotificationItemClick = (id: number) => {
     setNotifications((prev) =>
       prev.map((notif) =>
@@ -84,14 +80,12 @@ const Topbar = ({ isClosing, mobileOpen, setMobileOpen }: TopbarProps) => {
       )
     );
 
-    // Met à jour la liste des IDs vues dans localStorage
     const viewedIds = JSON.parse(localStorage.getItem('viewedNotifications') || '[]') as number[];
     if (!viewedIds.includes(id)) {
       viewedIds.push(id);
       localStorage.setItem('viewedNotifications', JSON.stringify(viewedIds));
     }
 
-    // Recalcule le nombre de notifications non vues
     setNotificationCount((prevCount) => Math.max(prevCount - 1, 0));
 
     handleClose();
@@ -101,14 +95,19 @@ const Topbar = ({ isClosing, mobileOpen, setMobileOpen }: TopbarProps) => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
+        const token = localStorage.getItem('token');
+
         const response = await axios.get<DemandeDocument[]>(
-          'http://localhost:2233/api/demandes-documents/non-vues'
+          'http://localhost:2233/api/demandes-documents/non-vues',
+          {
+            headers: {
+              Authorization: token ? `Bearer ${token}` : '',
+            },
+          }
         );
 
-        // Récupérer IDs des notifications déjà vues localement
         const viewedIds = JSON.parse(localStorage.getItem('viewedNotifications') || '[]') as number[];
 
-        // Marquer comme vues celles qui sont dans localStorage
         const notifsAvecVue = response.data.map((notif) => ({
           ...notif,
           vue: viewedIds.includes(notif.id),
@@ -116,20 +115,16 @@ const Topbar = ({ isClosing, mobileOpen, setMobileOpen }: TopbarProps) => {
 
         setNotifications(notifsAvecVue);
 
-        // Calculer nombre notifications non vues
         const nonVuesCount = notifsAvecVue.filter((notif) => !notif.vue).length;
         setNotificationCount(nonVuesCount);
 
-        // Affiche le badge si il y a des notifications non vues
-        setIsBadgeVisible(nonVuesCount > 0);
-
+        console.log('Nombre notifications non vues:', nonVuesCount);
       } catch (error) {
         console.error('Erreur chargement notifications:', error);
       }
     };
 
     fetchNotifications();
-
     const interval = setInterval(fetchNotifications, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -169,8 +164,32 @@ const Topbar = ({ isClosing, mobileOpen, setMobileOpen }: TopbarProps) => {
       <Stack spacing={{ xs: 1, sm: 2 }} alignItems="center" direction="row">
         <LanguageSelect />
 
-        <IconButton size="large" onClick={handleNotificationClick}>
-          <Badge badgeContent={notificationCount} color="error" invisible={!isBadgeVisible}>
+        <IconButton
+          size="large"
+          onClick={handleNotificationClick}
+          sx={{ position: 'relative' }} // IMPORTANT pour le badge
+        >
+          <Badge
+            badgeContent={notificationCount > 0 ? notificationCount : null}
+            color="error"
+            showZero={false}
+            sx={{
+              '& .MuiBadge-badge': {
+                color: '#fff',
+                backgroundColor: '#d32f2f',
+                fontWeight: 'bold',
+                minWidth: 18,
+                height: 18,
+                borderRadius: 9,
+                fontSize: 12,
+                lineHeight: 1,
+                padding: '0 6px',
+                right: 4,
+                top: 4,
+                boxShadow: '0 0 0 2px white',
+              },
+            }}
+          >
             <IconifyIcon icon="ic:outline-notifications" />
           </Badge>
         </IconButton>
@@ -202,7 +221,7 @@ const Topbar = ({ isClosing, mobileOpen, setMobileOpen }: TopbarProps) => {
                   whiteSpace: 'normal',
                   alignItems: 'flex-start',
                   cursor: 'pointer',
-                  bgcolor: notif.vue ? 'background.paper' : 'action.selected', // inversion des couleurs
+                  bgcolor: notif.vue ? 'background.paper' : 'action.selected',
                 }}
               >
                 <Box>

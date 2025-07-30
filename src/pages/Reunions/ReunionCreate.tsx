@@ -21,17 +21,29 @@ const ReunionCreate: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        // 🔐 Récupération du token depuis le localStorage
+        const token = localStorage.getItem('token');
+
         try {
-            const response = await axios.post('http://localhost:2233/api/reunions', {
-                titre,
-                dateHeure,
-                lieu,
-                description,
-                employeNomsComplet,
-            });
+            const response = await axios.post(
+                'http://localhost:2233/api/reunions',
+                {
+                    titre,
+                    dateHeure,
+                    lieu,
+                    description,
+                    employeNomsComplet,
+                },
+                {
+                    headers: {
+                        Authorization: token ? `Bearer ${token}` : '',
+                    },
+                }
+            );
 
             console.log('Réunion créée avec succès :', response.data);
-            alert("Réunion créée avec succès !");
+            alert('Réunion créée avec succès !');
+
             // reset formulaire
             setTitre('');
             setDateHeure('');
@@ -40,7 +52,7 @@ const ReunionCreate: React.FC = () => {
             setEmployeNomsComplet(['']);
         } catch (error) {
             console.error('Erreur lors de la création de la réunion :', error);
-            alert("Erreur lors de la création de la réunion.");
+            alert('Erreur lors de la création de la réunion.');
         }
     };
 
@@ -71,11 +83,14 @@ const ReunionCreate: React.FC = () => {
                         required
                     />
                 ))}
+
                 <button type="button" onClick={addParticipant} className="btn-add-participant">
                     + Ajouter un participant
                 </button>
 
-                <button type="submit" className="btn-submit">Créer la Réunion</button>
+                <button type="submit" className="btn-submit">
+                    Créer la Réunion
+                </button>
             </form>
         </div>
     );
