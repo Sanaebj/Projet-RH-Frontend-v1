@@ -15,25 +15,22 @@ import {
 } from '@mui/material';
 import { createEmploye } from '../../services/employe.service';
 
-type EmployeForm = Omit<
-  {
-    id: number;
-    nom: string;
-    prenom: string;
-    email: string;
-    telephone: string;
-    adresse: string;
-    photo: string;
-    matricule: string;
-    service: string;
-    poste: string;
-    salaire: string;
-    genre: 'HOMME' | 'FEMME';
-    dateCreation: string;
-    dateEmbauche: string;
-  },
-  'id' | 'matricule' | 'dateCreation' | 'photo'
->;
+type EmployeForm = Omit<{
+  id: number;
+  nom: string;
+  prenom: string;
+  email: string;
+  telephone: string;
+  adresse: string;
+  photo: string;
+  matricule: string;
+  service: string;
+  poste: string;
+  salaire: string;
+  genre: 'HOMME' | 'FEMME';
+  dateCreation: string;
+  dateEmbauche: string;
+}, 'id' | 'matricule' | 'dateCreation' | 'photo'>;
 
 const EmployeCreate = () => {
   const navigate = useNavigate();
@@ -79,55 +76,33 @@ const EmployeCreate = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Validation du salaire : doit être un nombre valide et > 0
+  
     if (!employe.salaire || isNaN(Number(employe.salaire)) || Number(employe.salaire) <= 0) {
       alert('Veuillez saisir un salaire valide supérieur à 0');
       return;
     }
-
-    const formData = new FormData();
-
-    const keysToSend: (keyof EmployeForm)[] = [
-      'nom',
-      'prenom',
-      'email',
-      'telephone',
-      'adresse',
-      'dateEmbauche',
-      'service',
-      'poste',
-      'salaire',
-    ];
-
-    keysToSend.forEach((key) => {
-      const value = employe[key];
-
-      if (value !== null && value !== undefined) {
-        formData.append(key, String(value));
-      }
-    });
-
-    if (photoFile) {
-      formData.append('photo', photoFile);
-    }
-
+  
     try {
-      await createEmploye(formData);
+      // Cast en ajoutant les champs manquants requis par le backend
+      const employeToSend = {
+        ...employe,
+        photo: '' // valeur vide si aucune photo gérée
+      };
+  
+      await createEmploye(employeToSend);
       navigate('/employes');
     } catch (error) {
       console.error("Erreur lors de la création de l'employé", error);
     }
   };
-
+  
   return (
     <Paper elevation={3} sx={{ p: 4, maxWidth: 600, mx: 'auto', mt: 4 }}>
       <Typography variant="h5" gutterBottom>
         Créer un employé
       </Typography>
-      <Box component="form" onSubmit={handleSubmit} encType="multipart/form-data">
+      <Box component="form" onSubmit={handleSubmit}>
         <Grid container spacing={2}>
-          {/* ... les autres champs ... */}
           <Grid item xs={6}>
             <TextField
               label="Nom"
@@ -176,7 +151,6 @@ const EmployeCreate = () => {
               fullWidth
             />
           </Grid>
-
           <Grid item xs={6}>
             <TextField
               label="Poste"
@@ -195,24 +169,21 @@ const EmployeCreate = () => {
               fullWidth
             />
           </Grid>
-
           <Grid item xs={6}>
-          <TextField
-  label="Salaire"
-  name="salaire"
-  type="number"
-  value={employe.salaire}
-  onChange={(e) =>
-    setEmploye((prev) => ({
-      ...prev,
-      salaire: e.target.value // garde la string jusqu’à l’envoi
-    }))
-  }
-  fullWidth
-/>
-
+            <TextField
+              label="Salaire"
+              name="salaire"
+              type="number"
+              value={employe.salaire}
+              onChange={(e) =>
+                setEmploye((prev) => ({
+                  ...prev,
+                  salaire: e.target.value,
+                }))
+              }
+              fullWidth
+            />
           </Grid>
-
           <Grid item xs={6}>
             <FormControl fullWidth>
               <InputLabel>Genre</InputLabel>
@@ -227,8 +198,6 @@ const EmployeCreate = () => {
               </Select>
             </FormControl>
           </Grid>
-
-       
           <Grid item xs={6}>
             <TextField
               label="Date d'embauche"
@@ -240,8 +209,7 @@ const EmployeCreate = () => {
               InputLabelProps={{ shrink: true }}
             />
           </Grid>
-
-                <Grid item xs={12}>
+          <Grid item xs={12}>
             <Button variant="contained" component="label" fullWidth>
               Télécharger la photo
               <input
@@ -257,7 +225,6 @@ const EmployeCreate = () => {
               </Typography>
             )}
           </Grid>
-
           <Grid item xs={12}>
             <Button type="submit" variant="contained" color="primary" fullWidth>
               Enregistrer
