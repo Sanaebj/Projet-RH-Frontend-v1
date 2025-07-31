@@ -1,17 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import {
-  Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Button,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 
 interface Employe {
   id: number;
@@ -47,8 +36,8 @@ const ListeDemandes: React.FC = () => {
   const marquerCommePret = async (id: number) => {
     try {
       await axios.put(`http://localhost:2233/api/demandes-documents/${id}/valider`);
-      setDemandes((prev) =>
-        prev.map((d) => (d.id === id ? { ...d, documentPret: true } : d))
+      setDemandes(prev =>
+        prev.map(d => (d.id === id ? { ...d, documentPret: true } : d))
       );
     } catch (error) {
       console.error('Erreur mise à jour :', error);
@@ -56,52 +45,66 @@ const ListeDemandes: React.FC = () => {
   };
 
   return (
-      <>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h5">Liste des demandes de documents</Typography>
-        </Box>
-    <TableContainer component={Paper} sx={{ maxWidth: 1400,margin: 'auto', mt: 4, p: 2 }}>
-      <Table aria-label="liste des demandes">
-        <TableHead>
-          <TableRow>
-            <TableCell>Employé</TableCell>
-            <TableCell>Type</TableCell>
-            <TableCell>Date</TableCell>
-            <TableCell>Commentaire</TableCell>
-            <TableCell>État</TableCell>
-            <TableCell>Action</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {demandes.map((demande) => (
-            <TableRow key={demande.id}>
-              <TableCell>
-                {demande.employe
-                  ? `${demande.employe.nom} ${demande.employe.prenom}`
-                  : 'Employé inconnu'}
-              </TableCell>
-              <TableCell>{demande.type}</TableCell>
-              <TableCell>{demande.dateDemande}</TableCell>
-              <TableCell>{demande.commentaire || '-'}</TableCell>
-              <TableCell>{demande.documentPret ? '✅ Prêt' : '⏳ En attente'}</TableCell>
-              <TableCell>
-                {!demande.documentPret && (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    onClick={() => marquerCommePret(demande.id)}
-                  >
-                    Marquer comme prêt
-                  </Button>
+    <>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Typography variant="h5">📄 Liste des demandes de documents</Typography>
+        {/* Ici tu peux ajouter un bouton si besoin, par exemple pour ajouter une demande */}
+      </Box>
+
+      <div className="card mt-4">
+        <div className="card-body">
+          <div className="table-responsive">
+            <table className="table table-hover custom-table">
+              <thead>
+                <tr>
+                  <th>Employé</th>
+                  <th>Type</th>
+                  <th>Date</th>
+                  <th>Commentaire</th>
+                  <th>État</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {demandes.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} style={{ textAlign: 'center' }}>
+                      Aucune demande trouvée
+                    </td>
+                  </tr>
+                ) : (
+                  demandes.map((demande) => (
+                    <tr key={demande.id}>
+                      <td>
+                        {demande.employe
+                          ? `${demande.employe.nom} ${demande.employe.prenom}`
+                          : 'Employé inconnu'}
+                      </td>
+                      <td>{demande.type}</td>
+                      <td>{new Date(demande.dateDemande).toLocaleDateString('fr-FR')}</td>
+                      <td>{demande.commentaire || '-'}</td>
+                      <td>{demande.documentPret ? '✅ Prêt' : '⏳ En attente'}</td>
+                      <td>
+                        {!demande.documentPret && (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                            onClick={() => marquerCommePret(demande.id)}
+                          >
+                            Marquer comme prêt
+                          </Button>
+                        )}
+                      </td>
+                    </tr>
+                  ))
                 )}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-        </>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 

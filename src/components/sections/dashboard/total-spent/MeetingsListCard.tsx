@@ -33,10 +33,9 @@ import {
     useEffect(() => {
       const fetchReunions = async () => {
         try {
-          const data = await getUpcomingReunions();
+          const data = await getUpcomingReunions(); // L’appel intègre déjà le header Authorization
           setReunions(data);
   
-          // Compter les réunions par mois
           const countByMonth: { [key: string]: number } = {};
           data.forEach((reunion: Reunion) => {
             if (reunion.dateHeure) {
@@ -46,7 +45,6 @@ import {
             }
           });
   
-          // Transformer en tableau trié
           const monthlyData = Object.entries(countByMonth)
             .map(([month, count]) => ({ month, count }))
             .sort(

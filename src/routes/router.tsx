@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import paths, { rootPaths } from './paths';
 import { Suspense, lazy } from 'react';
-import { Outlet, createBrowserRouter } from 'react-router-dom';
+import { Navigate, Outlet, createBrowserRouter } from 'react-router-dom';
 import MainLayout from 'layouts/main-layout';
 import Splash from 'components/loader/Splash';
 import PageLoader from 'components/loader/PageLoader';
@@ -17,8 +17,6 @@ const EmployeCreate = lazy(() => import('../pages/employes/EmployeCreate'));
 const ReunionCreate = lazy(() => import('../pages/Reunions/ReunionCreate'));
 const ReunionList = lazy(() => import('../pages/Reunions/ReunionList'));
 const PointageTable = lazy(() => import('pages/absences/PointageTable.tsx'));
-
-
 const Profile = lazy(() => import('pages/profile/Profile'));
 
 const router = createBrowserRouter(
@@ -30,7 +28,7 @@ const router = createBrowserRouter(
         </Suspense>
       ),
       children: [
-        // Protected Routes
+        // Routes protégées par authentification
         {
           path: '/',
           element: (
@@ -50,30 +48,32 @@ const router = createBrowserRouter(
             { path: 'reunions/add', element: <ReunionCreate /> },
             { path: 'demandes', element: <ListeDemandes /> },
             { path: 'pointage', element: <PointageTable /> },
-            { path: 'profile', element: <Profile /> }, // 👈 route ajoutée ici
-
-            
+            { path: 'profile', element: <Profile /> },
           ],
         },
 
-        // Auth Routes (public)
+        // Routes publiques d’authentification
         {
-          path: rootPaths.authRoot,
+          path: rootPaths.authRoot, // ex: "/auth"
           element: (
             <AuthLayout>
               <Outlet />
             </AuthLayout>
           ),
-          children: [
-            { path: paths.signin, element: <Signin /> },
-          ],
+          children: [{ path: paths.signin, element: <Signin /> }],
+        },
+
+        // Optionnel : redirection route inconnue vers login
+        {
+          path: '*',
+          element: <Navigate to={`${rootPaths.authRoot}/${paths.signin}`} replace />,
         },
       ],
     },
   ],
   {
     basename: '/venus',
-  },
+  }
 );
 
 export default router;

@@ -63,12 +63,7 @@ const sitemap: MenuItem[] = [
     path: '/pointage',
     icon: 'material-symbols:account-balance-wallet-outline',
   },
-  {
-    id: 'settings',
-    subheader: 'Settings',
-    path: '#!',
-    icon: 'ic:outline-settings',
-  },
+ 
 ];
 
 export default sitemap;

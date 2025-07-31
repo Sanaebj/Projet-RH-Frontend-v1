@@ -8,7 +8,6 @@ interface User {
   email: string;
   role: string;
 }
-
 const Profile = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -19,16 +18,29 @@ const Profile = () => {
     navigate('/auth/signin', { replace: true });
   };
 
+const parseJwt = (token: string) => {
+    try {
+      return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+      return null;
+    }
+  };
+  
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    console.log("Token:", token);
-
+    const token = localStorage.getItem('token'); // déclare et récupère le token en premier
+    console.log("Token brut:", token);
+  
+    if (token) {
+      const payload = parseJwt(token);
+      console.log("Payload du token:", payload);
+    }
+  
     if (!token) {
       setError('Vous devez être connecté pour accéder au profil.');
       setLoading(false);
       return;
     }
-
+  
     fetch('http://localhost:2233/api/users/me', {
       method: 'GET',
       mode: 'cors',
@@ -38,8 +50,10 @@ const Profile = () => {
       },
     })
       .then(async (res) => {
+        console.log("Status:", res.status);
         if (!res.ok) {
           if (res.status === 401 || res.status === 403) {
+            console.log("Token invalide ou expiré, redirection vers login");
             localStorage.removeItem('token');
             redirectToLogin();
             throw new Error(`Accès refusé (${res.status}). Vous devez vous reconnecter.`);
@@ -50,15 +64,17 @@ const Profile = () => {
         return res.json();
       })
       .then((data) => {
+        console.log("Données utilisateur reçues:", data);
         setUser(data);
         setError(null);
       })
       .catch((err) => {
+        console.error("Erreur:", err);
         setError(err.message);
       })
       .finally(() => setLoading(false));
   }, [navigate]);
-
+  
   if (loading) {
     return (
       <Box mt={4} textAlign="center">

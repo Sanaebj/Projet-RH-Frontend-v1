@@ -3,11 +3,9 @@ import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Badge from '@mui/material/Badge';
 import Toolbar from '@mui/material/Toolbar';
-import TextField from '@mui/material/TextField';
-import ButtonBase from '@mui/material/ButtonBase';
+ import ButtonBase from '@mui/material/ButtonBase';
 import IconButton from '@mui/material/IconButton';
-import InputAdornment from '@mui/material/InputAdornment';
-import Menu from '@mui/material/Menu';
+ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -147,18 +145,8 @@ const Topbar = ({ isClosing, mobileOpen, setMobileOpen }: TopbarProps) => {
           </IconButton>
         </Toolbar>
 
-        <TextField
-          variant="filled"
-          placeholder="Search"
-          sx={{ width: 340, display: { xs: 'none', md: 'flex' } }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <IconifyIcon icon="eva:search-fill" />
-              </InputAdornment>
-            ),
-          }}
-        />
+         
+        
       </Stack>
 
       <Stack spacing={{ xs: 1, sm: 2 }} alignItems="center" direction="row">

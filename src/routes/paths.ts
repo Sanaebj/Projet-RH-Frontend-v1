@@ -13,7 +13,6 @@ export default {
   reunions: `/${rootPaths.pageRoot}/reunions`,
   demandes: `/${rootPaths.pageRoot}/demandes`,
   pointage: `/${rootPaths.pageRoot}/pointage`,
-  settings: `/${rootPaths.pageRoot}/settings`,
 
   signin: `/${rootPaths.authRoot}/signin`,
   forgotPassword: `/${rootPaths.authRoot}/forgot-password`,
