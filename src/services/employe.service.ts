@@ -17,14 +17,14 @@ export const getAllEmployes = async (): Promise<Employe[]> => {
 export const createEmploye = async (employe: Employe): Promise<Employe> => {
   const token = localStorage.getItem('token');
   const response = await axios.post<Employe>(
-    'http://localhost:2233/api/employes',
-    employe,
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: token ? `Bearer ${token}` : '',
-      },
-    }
+      'http://localhost:2233/api/employes',
+      employe,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token ? `Bearer ${token}` : '',
+        },
+      }
   );
   return response.data;
 };

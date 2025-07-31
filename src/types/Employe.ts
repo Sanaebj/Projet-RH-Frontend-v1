@@ -13,4 +13,5 @@ export type Employe = {
   genre: 'HOMME' | 'FEMME';
   dateCreation?: string;
   dateEmbauche: string;
+  cin: string;
 };

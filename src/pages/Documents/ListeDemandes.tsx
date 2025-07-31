@@ -54,6 +54,12 @@ const ListeDemandes: React.FC = () => {
       console.error('Erreur mise à jour :', error);
     }
   };
+  const headerCellStyle = {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    borderBottom: 'none',
+  };
 
   return (
       <>
@@ -63,13 +69,25 @@ const ListeDemandes: React.FC = () => {
     <TableContainer component={Paper} sx={{ maxWidth: 1400,margin: 'auto', mt: 4, p: 2 }}>
       <Table aria-label="liste des demandes">
         <TableHead>
-          <TableRow>
-            <TableCell>Employé</TableCell>
-            <TableCell>Type</TableCell>
-            <TableCell>Date</TableCell>
-            <TableCell>Commentaire</TableCell>
-            <TableCell>État</TableCell>
-            <TableCell>Action</TableCell>
+          <TableRow
+              sx={{
+                backgroundColor: '#4f46e5',
+                '& th:first-of-type': {
+                  borderTopLeftRadius: '12px',
+                  borderBottomLeftRadius: '12px',
+                },
+                '& th:last-of-type': {
+                  borderTopRightRadius: '12px',
+                  borderBottomRightRadius: '12px',
+                },
+              }}
+          >
+            <TableCell sx={headerCellStyle}>Employé</TableCell>
+            <TableCell sx={headerCellStyle}>Type</TableCell>
+            <TableCell sx={headerCellStyle}>Date</TableCell>
+            <TableCell sx={headerCellStyle}>Commentaire</TableCell>
+            <TableCell sx={headerCellStyle}>État</TableCell>
+            <TableCell sx={headerCellStyle}>Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
