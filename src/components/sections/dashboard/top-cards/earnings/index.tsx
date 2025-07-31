@@ -1,3 +1,5 @@
+import  { useEffect, useState } from 'react';
+import axiosInstance from '../../../../../services/axiosInstance';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
@@ -5,6 +7,19 @@ import Typography from '@mui/material/Typography';
 import IconifyIcon from 'components/base/IconifyIcon';
 
 const Earnings = () => {
+  const [nombreDemandes, setNombreDemandes] = useState<number>(0);
+
+  useEffect(() => {
+    axiosInstance
+      .get<number>('/demandes-documents/count/en-cours') // <-- Ici le <number>
+      .then(response => {
+        setNombreDemandes(response.data);
+      })
+      .catch(error => {
+        console.error("Erreur lors de la récupération du nombre de demandes :", error);
+      });
+  }, []);
+
   return (
     <Paper
       component={Stack}
@@ -28,7 +43,7 @@ const Earnings = () => {
             Demandes RH
           </Typography>
           <Typography mt={1} variant="h3">
-            2 (en cours)
+            {nombreDemandes} 
           </Typography>
         </Box>
       </Stack>

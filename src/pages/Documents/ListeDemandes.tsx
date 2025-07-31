@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Box, Button, Typography } from '@mui/material';
+import { Alert, Box, Button, CircularProgress, Typography } from '@mui/material';
+import axiosInstance from '../../services/axiosInstance'; // Import modifié
+
 
 interface Employe {
   id: number;
@@ -19,6 +20,8 @@ interface DemandeDocument {
 
 const ListeDemandes: React.FC = () => {
   const [demandes, setDemandes] = useState<DemandeDocument[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchDemandes();
@@ -26,29 +29,37 @@ const ListeDemandes: React.FC = () => {
 
   const fetchDemandes = async () => {
     try {
-      const res = await axios.get<DemandeDocument[]>('http://localhost:2233/api/demandes-documents');
+      setLoading(true);
+      setError(null);
+      const res = await axiosInstance.get<DemandeDocument[]>('/demandes-documents');
       setDemandes(res.data);
     } catch (error) {
-      console.error('Erreur lors du chargement des demandes :', error);
+      console.error('Erreur:', error);
+      setError('Erreur lors du chargement des demandes');
+    } finally {
+      setLoading(false);
     }
   };
 
   const marquerCommePret = async (id: number) => {
     try {
-      await axios.put(`http://localhost:2233/api/demandes-documents/${id}/valider`);
+      await axiosInstance.put(`/demandes-documents/${id}/valider`);
       setDemandes(prev =>
         prev.map(d => (d.id === id ? { ...d, documentPret: true } : d))
       );
     } catch (error) {
-      console.error('Erreur mise à jour :', error);
+      console.error('Erreur:', error);
+      setError('Échec de la mise à jour');
     }
   };
+
+  if (loading) return <CircularProgress />;
+  if (error) return <Alert severity="error">{error}</Alert>;
 
   return (
     <>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography variant="h5">📄 Liste des demandes de documents</Typography>
-        {/* Ici tu peux ajouter un bouton si besoin, par exemple pour ajouter une demande */}
       </Box>
 
       <div className="card mt-4">
