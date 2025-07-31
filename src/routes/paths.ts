@@ -3,6 +3,8 @@ export const rootPaths = {
   pageRoot: 'pages',
   authRoot: 'auth',
   errorRoot: 'error',
+  profile: '/profile',
+
 };
 
 export default {
@@ -16,4 +18,7 @@ export default {
   signin: `/${rootPaths.authRoot}/signin`,
   forgotPassword: `/${rootPaths.authRoot}/forgot-password`,
   404: `/${rootPaths.errorRoot}/404`,
+
+  profile: rootPaths.profile,
+
 };

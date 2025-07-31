@@ -18,6 +18,9 @@ const ReunionCreate = lazy(() => import('../pages/Reunions/ReunionCreate'));
 const ReunionList = lazy(() => import('../pages/Reunions/ReunionList'));
 const PointageTable = lazy(() => import('pages/absences/PointageTable.tsx'));
 
+
+const Profile = lazy(() => import('pages/profile/Profile'));
+
 const router = createBrowserRouter(
   [
     {
@@ -47,6 +50,9 @@ const router = createBrowserRouter(
             { path: 'reunions/add', element: <ReunionCreate /> },
             { path: 'demandes', element: <ListeDemandes /> },
             { path: 'pointage', element: <PointageTable /> },
+            { path: 'profile', element: <Profile /> }, // 👈 route ajoutée ici
+
+            
           ],
         },
 

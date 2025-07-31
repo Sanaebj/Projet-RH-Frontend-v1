@@ -60,7 +60,7 @@ const EmployeList = () => {
                 <TableCell>{emp.poste}</TableCell>
                 <TableCell>{emp.service}</TableCell>
                 <TableCell>{emp.email}</TableCell>
-                <TableCell>{emp.salaire} MAD</TableCell>
+                <TableCell>{emp.salaire} DH</TableCell>
               </TableRow>
             ))}
           </TableBody>

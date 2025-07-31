@@ -30,10 +30,6 @@ interface JwtPayload {
 
 const menuItems: MenuItems[] = [
   { id: 1, title: 'View Profile', icon: 'ic:outline-account-circle' },
-  { id: 2, title: 'Account Settings', icon: 'ic:outline-manage-accounts' },
-  { id: 3, title: 'Notifications', icon: 'ic:outline-notifications-none' },
-  { id: 4, title: 'Switch Account', icon: 'ic:outline-switch-account' },
-  { id: 5, title: 'Help Center', icon: 'ic:outline-contact-support' },
   { id: 6, title: 'Logout', icon: 'ic:baseline-logout' },
 ];
 
@@ -67,13 +63,17 @@ const ProfileMenu = () => {
 
   const handleMenuItemClick = (title: string) => {
     handleProfileMenuClose();
-
+  
     if (title === 'Logout') {
       localStorage.removeItem('token');
       navigate(paths.signin);
     }
+  
+    if (title === 'View Profile') {
+      navigate(paths.profile); // Assure-toi que paths.profile existe et pointe vers '/profile'
+    }
   };
-
+  
   return (
     <>
       <ButtonBase
