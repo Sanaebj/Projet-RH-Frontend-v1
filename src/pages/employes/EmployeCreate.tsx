@@ -30,6 +30,7 @@ type EmployeForm = Omit<{
   genre: 'HOMME' | 'FEMME';
   dateCreation: string;
   dateEmbauche: string;
+  cin: string;
 }, 'id' | 'matricule' | 'dateCreation' | 'photo'>;
 
 const EmployeCreate = () => {
@@ -43,20 +44,20 @@ const EmployeCreate = () => {
     adresse: '',
     service: '',
     poste: '',
-    salaire: '0',
+    salaire: '',
     genre: 'HOMME',
     dateEmbauche: '',
+    cin: '',
   });
-
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+
     setEmploye((prev) => ({
       ...prev,
-      [name]: name === 'salaire' && value === '' ? '0' : value,
+      [name]: value,
     }));
   };
 
@@ -68,33 +69,64 @@ const EmployeCreate = () => {
     }));
   };
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setPhotoFile(e.target.files[0]);
-    }
-  };
+  const isValidEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const isValidPhone = (tel: string) =>
+    /^\+212[5-7][0-9]{8}$/.test(tel);
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!employe.salaire || isNaN(Number(employe.salaire)) || Number(employe.salaire) <= 0) {
-    alert('Veuillez saisir un salaire valide supérieur à 0');
-    return;
-  }
+    const { nom, prenom, email, telephone, salaire, cin, dateEmbauche } = employe;
 
-  try {
-    // Cast en ajoutant les champs manquants requis par le backend
-    const employeToSend = {
-      ...employe,
-      photo: '' // valeur vide si aucune photo gérée
-    };
+    if (nom.length < 2 || nom.length > 50) {
+      alert('Le nom doit contenir entre 2 et 50 caractères.');
+      return;
+    }
 
-    await createEmploye(employeToSend);
-    navigate('/employes');
-  } catch (error) {
-    console.error("Erreur lors de la création de l'employé", error);
-  }
-};
+    if (prenom.length < 2 || prenom.length > 50) {
+      alert('Le prénom doit contenir entre 2 et 50 caractères.');
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      alert("L'email n'est pas valide.");
+      return;
+    }
+
+    if (!isValidPhone(telephone)) {
+      alert("Le numéro de téléphone doit être au format +212XXXXXXXXX.");
+      return;
+    }
+
+    const salaireNum = Number(salaire);
+    if (isNaN(salaireNum) || salaireNum < 1000 || salaireNum > 30000) {
+      alert('Le salaire doit être un nombre entre 1000 et 30000 DH.');
+      return;
+    }
+
+    if (!dateEmbauche) {
+      alert("La date d'embauche est obligatoire.");
+      return;
+    }
+
+    if (cin.length < 4 || cin.length > 10) {
+      alert('Le CIN doit contenir entre 4 et 10 caractères.');
+      return;
+    }
+
+    try {
+      const employeToSend = {
+        ...employe,
+        photo: '',
+      };
+      await createEmploye(employeToSend);
+      navigate('/employes');
+    } catch (error) {
+      console.error("Erreur lors de la création de l'employé", error);
+    }
+  };
 
   return (
     <Paper elevation={3} sx={{ p: 4, maxWidth: 600, mx: 'auto', mt: 4 }}>
@@ -104,33 +136,24 @@ const EmployeCreate = () => {
       <Box component="form" onSubmit={handleSubmit}>
         <Grid container spacing={2}>
           <Grid item xs={6}>
-            <TextField
-              label="Nom"
-              name="nom"
-              value={employe.nom}
-              onChange={handleInputChange}
-              fullWidth
-              required
-            />
+            <TextField label="Nom" name="nom" value={employe.nom} onChange={handleInputChange} fullWidth required />
           </Grid>
           <Grid item xs={6}>
-            <TextField
-              label="Prénom"
-              name="prenom"
-              value={employe.prenom}
-              onChange={handleInputChange}
-              fullWidth
-              required
-            />
+            <TextField label="Prénom" name="prenom" value={employe.prenom} onChange={handleInputChange} fullWidth required />
           </Grid>
           <Grid item xs={6}>
             <TextField
               label="Email"
               name="email"
+              type="email"
               value={employe.email}
               onChange={handleInputChange}
               fullWidth
               required
+              inputProps={{
+                pattern: "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$",
+                title: "Veuillez entrer une adresse e-mail valide.",
+              }}
             />
           </Grid>
           <Grid item xs={6}>
@@ -138,61 +161,55 @@ const EmployeCreate = () => {
               label="Téléphone"
               name="telephone"
               value={employe.telephone}
-              onChange={handleInputChange}
+              onChange={(e) => {
+                const input = e.target.value.replace(/[^\d]/g, '');
+                const withoutPrefix = input.startsWith('212') ? input.slice(3) : input;
+                setEmploye((prev) => ({
+                  ...prev,
+                  telephone: `+212${withoutPrefix}`,
+                }));
+              }}
+              inputProps={{
+                pattern: '\\+212[5-7][0-9]{8}',
+                title: 'Le numéro doit être au format +212XXXXXXXXX',
+              }}
               fullWidth
+              required
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
-              label="Adresse"
-              name="adresse"
-              value={employe.adresse}
-              onChange={handleInputChange}
-              fullWidth
-            />
+            <TextField label="Adresse" name="adresse" value={employe.adresse} onChange={handleInputChange} fullWidth />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField label="Poste" name="poste" value={employe.poste} onChange={handleInputChange} fullWidth />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField label="Service" name="service" value={employe.service} onChange={handleInputChange} fullWidth />
           </Grid>
           <Grid item xs={6}>
             <TextField
-              label="Poste"
-              name="poste"
-              value={employe.poste}
-              onChange={handleInputChange}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              label="Service"
-              name="service"
-              value={employe.service}
-              onChange={handleInputChange}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              label="Salaire"
+              label="Salaire (Dhs)"
               name="salaire"
               type="number"
               value={employe.salaire}
-              onChange={(e) =>
-                setEmploye((prev) => ({
-                  ...prev,
-                  salaire: e.target.value,
-                }))
-              }
+              onChange={(e) => {
+                const val = e.target.value;
+                if (/^\d*$/.test(val)) {
+                  setEmploye((prev) => ({
+                    ...prev,
+                    salaire: val,
+                  }));
+                }
+              }}
               fullWidth
+              inputProps={{ min: 1000, max: 30000 }}
+              required
             />
           </Grid>
           <Grid item xs={6}>
             <FormControl fullWidth>
               <InputLabel>Genre</InputLabel>
-              <Select
-                name="genre"
-                value={employe.genre}
-                onChange={handleSelectChange}
-                label="Genre"
-              >
+              <Select name="genre" value={employe.genre} onChange={handleSelectChange} label="Genre">
                 <MenuItem value="HOMME">Homme</MenuItem>
                 <MenuItem value="FEMME">Femme</MenuItem>
               </Select>
@@ -207,23 +224,11 @@ const EmployeCreate = () => {
               onChange={handleInputChange}
               fullWidth
               InputLabelProps={{ shrink: true }}
+              required
             />
           </Grid>
-          <Grid item xs={12}>
-            <Button variant="contained" component="label" fullWidth>
-              Télécharger la photo
-              <input
-                type="file"
-                hidden
-                accept="image/*"
-                onChange={handlePhotoChange}
-              />
-            </Button>
-            {photoFile && (
-              <Typography variant="body2" sx={{ mt: 1 }}>
-                {photoFile.name}
-              </Typography>
-            )}
+          <Grid item xs={6}>
+            <TextField label="CIN" name="cin" value={employe.cin} onChange={handleInputChange} fullWidth required />
           </Grid>
           <Grid item xs={12}>
             <Button type="submit" variant="contained" color="primary" fullWidth>

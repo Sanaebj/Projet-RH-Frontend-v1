@@ -1,7 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Box, Button, CircularProgress, Typography } from '@mui/material';
-import axiosInstance from '../../services/axiosInstance'; // Import modifié
-
+import axios from 'axios';
+import {
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+  Typography,
+} from '@mui/material';
 
 interface Employe {
   id: number;
@@ -20,8 +30,6 @@ interface DemandeDocument {
 
 const ListeDemandes: React.FC = () => {
   const [demandes, setDemandes] = useState<DemandeDocument[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchDemandes();
@@ -29,93 +37,89 @@ const ListeDemandes: React.FC = () => {
 
   const fetchDemandes = async () => {
     try {
-      setLoading(true);
-      setError(null);
-      const res = await axiosInstance.get<DemandeDocument[]>('/demandes-documents');
+      const res = await axios.get<DemandeDocument[]>('http://localhost:2233/api/demandes-documents');
       setDemandes(res.data);
     } catch (error) {
-      console.error('Erreur:', error);
-      setError('Erreur lors du chargement des demandes');
-    } finally {
-      setLoading(false);
+      console.error('Erreur lors du chargement des demandes :', error);
     }
   };
 
   const marquerCommePret = async (id: number) => {
     try {
-      await axiosInstance.put(`/demandes-documents/${id}/valider`);
-      setDemandes(prev =>
-        prev.map(d => (d.id === id ? { ...d, documentPret: true } : d))
+      await axios.put(`http://localhost:2233/api/demandes-documents/${id}/valider`);
+      setDemandes((prev) =>
+        prev.map((d) => (d.id === id ? { ...d, documentPret: true } : d))
       );
     } catch (error) {
-      console.error('Erreur:', error);
-      setError('Échec de la mise à jour');
+      console.error('Erreur mise à jour :', error);
     }
   };
-
-  if (loading) return <CircularProgress />;
-  if (error) return <Alert severity="error">{error}</Alert>;
+  const headerCellStyle = {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    borderBottom: 'none',
+  };
 
   return (
-    <>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h5">📄 Liste des demandes de documents</Typography>
-      </Box>
-
-      <div className="card mt-4">
-        <div className="card-body">
-          <div className="table-responsive">
-            <table className="table table-hover custom-table">
-              <thead>
-                <tr>
-                  <th>Employé</th>
-                  <th>Type</th>
-                  <th>Date</th>
-                  <th>Commentaire</th>
-                  <th>État</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {demandes.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} style={{ textAlign: 'center' }}>
-                      Aucune demande trouvée
-                    </td>
-                  </tr>
-                ) : (
-                  demandes.map((demande) => (
-                    <tr key={demande.id}>
-                      <td>
-                        {demande.employe
-                          ? `${demande.employe.nom} ${demande.employe.prenom}`
-                          : 'Employé inconnu'}
-                      </td>
-                      <td>{demande.type}</td>
-                      <td>{new Date(demande.dateDemande).toLocaleDateString('fr-FR')}</td>
-                      <td>{demande.commentaire || '-'}</td>
-                      <td>{demande.documentPret ? '✅ Prêt' : '⏳ En attente'}</td>
-                      <td>
-                        {!demande.documentPret && (
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            size="small"
-                            onClick={() => marquerCommePret(demande.id)}
-                          >
-                            Marquer comme prêt
-                          </Button>
-                        )}
-                      </td>
-                    </tr>
-                  ))
+      <>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Typography variant="h5">Liste des demandes de documents</Typography>
+        </Box>
+    <TableContainer component={Paper} sx={{ maxWidth: 1400,margin: 'auto', mt: 4, p: 2 }}>
+      <Table aria-label="liste des demandes">
+        <TableHead>
+          <TableRow
+              sx={{
+                backgroundColor: '#4f46e5',
+                '& th:first-of-type': {
+                  borderTopLeftRadius: '12px',
+                  borderBottomLeftRadius: '12px',
+                },
+                '& th:last-of-type': {
+                  borderTopRightRadius: '12px',
+                  borderBottomRightRadius: '12px',
+                },
+              }}
+          >
+            <TableCell sx={headerCellStyle}>Employé</TableCell>
+            <TableCell sx={headerCellStyle}>Type</TableCell>
+            <TableCell sx={headerCellStyle}>Date</TableCell>
+            <TableCell sx={headerCellStyle}>Commentaire</TableCell>
+            <TableCell sx={headerCellStyle}>État</TableCell>
+            <TableCell sx={headerCellStyle}>Action</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {demandes.map((demande) => (
+            <TableRow key={demande.id}>
+              <TableCell>
+                {demande.employe
+                  ? `${demande.employe.nom} ${demande.employe.prenom}`
+                  : 'Employé inconnu'}
+              </TableCell>
+              <TableCell>{demande.type}</TableCell>
+              <TableCell>{demande.dateDemande}</TableCell>
+              <TableCell>{demande.commentaire || '-'}</TableCell>
+              <TableCell>{demande.documentPret ? '✅ Prêt' : '⏳ En attente'}</TableCell>
+              <TableCell>
+                {!demande.documentPret && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    onClick={() => marquerCommePret(demande.id)}
+                  >
+                    Marquer comme prêt
+                  </Button>
                 )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+        </>
   );
 };
 

@@ -7,6 +7,7 @@ import Splash from 'components/loader/Splash';
 import PageLoader from 'components/loader/PageLoader';
 import AuthLayout from 'layouts/auth-layout';
 import PrivateRoute from 'components/PrivateRoute';
+import UpdateEmploye from 'pages/employes/UpdateEmploye';
 
 const ListeDemandes = lazy(() => import('pages/Documents/ListeDemandes'));
 const App = lazy(() => import('App'));
@@ -49,6 +50,8 @@ const router = createBrowserRouter(
             { path: 'demandes', element: <ListeDemandes /> },
             { path: 'pointage', element: <PointageTable /> },
             { path: 'profile', element: <Profile /> },
+            { path: 'employes/edit/:id', element: <UpdateEmploye /> },
+
           ],
         },
 
