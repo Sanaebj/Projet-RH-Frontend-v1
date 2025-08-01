@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  getAllEmployes, 
-  deleteEmploye 
+import {
+  getAllEmployes,
+  deleteEmploye,
 } from '../../services/employe.service';
 import { Employe } from '../../types/Employe';
 import {
@@ -25,6 +25,7 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber'; // Icône bleue
 
 const EmployeList = () => {
   const [employes, setEmployes] = useState<Employe[]>([]);
@@ -45,13 +46,9 @@ const EmployeList = () => {
     }
   };
 
-  const handleCreate = () => {
-    navigate('/employes/add');
-  };
+  const handleCreate = () => navigate('/employes/add');
 
-  const handleEdit = (id: number) => {
-    navigate(`/employes/edit/${id}`);
-  };
+  const handleEdit = (id: number) => navigate(`/employes/edit/${id}`);
 
   const handleDeleteClick = (id: number) => {
     setSelectedEmployeId(id);
@@ -137,16 +134,10 @@ const EmployeList = () => {
                 <TableCell>{emp.email}</TableCell>
                 <TableCell>{emp.salaire} DH</TableCell>
                 <TableCell sx={actionCellStyle}>
-                  <IconButton 
-                    color="primary" 
-                    onClick={() => emp.id && handleEdit(emp.id)}
-                  >
+                  <IconButton color="primary" onClick={() => emp.id && handleEdit(emp.id)}>
                     <EditIcon />
                   </IconButton>
-                  <IconButton 
-                    color="error" 
-                    onClick={() => emp.id && handleDeleteClick(emp.id)}
-                  >
+                  <IconButton color="error" onClick={() => emp.id && handleDeleteClick(emp.id)}>
                     <DeleteIcon />
                   </IconButton>
                 </TableCell>
@@ -163,17 +154,20 @@ const EmployeList = () => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Confirmer la suppression</DialogTitle>
+        <DialogTitle id="alert-dialog-title" sx={{ color: '#1976d2', display: 'flex', alignItems: 'center' }}>
+          <WarningAmberIcon sx={{ marginRight: 1, color: '#1976d2' }} />
+          Confirmer la suppression
+        </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             Êtes-vous sûr de vouloir supprimer cet employé ? Cette action est irréversible.
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDeleteCancel} color="primary">
+        <DialogActions sx={{ padding: '16px' }}>
+          <Button onClick={handleDeleteCancel} sx={{ color: '#1976d2' }}>
             Annuler
           </Button>
-          <Button onClick={handleDeleteConfirm} color="error" autoFocus>
+          <Button onClick={handleDeleteConfirm} color="error" variant="contained" autoFocus>
             Confirmer
           </Button>
         </DialogActions>
