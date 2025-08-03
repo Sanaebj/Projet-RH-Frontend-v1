@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Reunion } from '../types/Reunion';
+import axiosInstance from './axiosInstance';
 
 const API_URL = 'http://localhost:2233/api/reunions';
 
@@ -36,4 +37,7 @@ export const getUpcomingReunions = async (): Promise<Reunion[]> => {
     throw error;
   }
 };
-
+export const deleteReunion = async (id: number) => {
+  const response = await axiosInstance.delete(`/reunions/${id}`);
+  return response.data;
+};

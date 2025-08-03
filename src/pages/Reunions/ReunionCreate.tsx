@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; 
 
 const ReunionCreate: React.FC = () => {
     const [titre, setTitre] = useState('');
@@ -7,7 +8,7 @@ const ReunionCreate: React.FC = () => {
     const [lieu, setLieu] = useState('');
     const [description, setDescription] = useState('');
     const [employeNomsComplet, setEmployeNomsComplet] = useState<string[]>(['']);
-
+    const navigate = useNavigate();
     const handleEmployeChange = (index: number, value: string) => {
         const updated = [...employeNomsComplet];
         updated[index] = value;
@@ -43,13 +44,15 @@ const ReunionCreate: React.FC = () => {
 
             console.log('Réunion créée avec succès :', response.data);
             alert('Réunion créée avec succès !');
-
+            navigate('/reunions');
             // reset formulaire
             setTitre('');
             setDateHeure('');
             setLieu('');
             setDescription('');
             setEmployeNomsComplet(['']);
+            navigate('/reunions');
+
         } catch (error) {
             console.error('Erreur lors de la création de la réunion :', error);
             alert('Erreur lors de la création de la réunion.');
