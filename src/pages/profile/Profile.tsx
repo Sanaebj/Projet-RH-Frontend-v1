@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Container, Typography, Box, CircularProgress, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../../services/axiosInstance';
+import axios, { AxiosResponse, AxiosError } from 'axios';
 
 interface User {
   nom: string;
@@ -8,6 +10,12 @@ interface User {
   email: string;
   role: string;
 }
+
+// Type-safe Axios error check
+function isAxiosError(error: unknown): error is AxiosError {
+  return axios.isAxiosError(error);
+}
+
 const Profile = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -18,63 +26,35 @@ const Profile = () => {
     navigate('/auth/signin', { replace: true });
   };
 
-const parseJwt = (token: string) => {
-    try {
-      return JSON.parse(atob(token.split('.')[1]));
-    } catch (e) {
-      return null;
-    }
-  };
-  
   useEffect(() => {
-    const token = localStorage.getItem('token'); // déclare et récupère le token en premier
-    console.log("Token brut:", token);
-  
-    if (token) {
-      const payload = parseJwt(token);
-      console.log("Payload du token:", payload);
-    }
-  
-    if (!token) {
-      setError('Vous devez être connecté pour accéder au profil.');
-      setLoading(false);
-      return;
-    }
-  
-    fetch('http://localhost:2233/api/users/me', {
-      method: 'GET',
-      mode: 'cors',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(async (res) => {
-        console.log("Status:", res.status);
-        if (!res.ok) {
-          if (res.status === 401 || res.status === 403) {
-            console.log("Token invalide ou expiré, redirection vers login");
-            localStorage.removeItem('token');
-            redirectToLogin();
-            throw new Error(`Accès refusé (${res.status}). Vous devez vous reconnecter.`);
-          }
-          const errorText = await res.text();
-          throw new Error(`Erreur HTTP ${res.status} : ${errorText}`);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        console.log("Données utilisateur reçues:", data);
-        setUser(data);
+    const fetchUser = async () => {
+      try {
+        const response: AxiosResponse<User> = await axiosInstance.get('/users/me');
+        setUser(response.data);
         setError(null);
-      })
-      .catch((err) => {
-        console.error("Erreur:", err);
-        setError(err.message);
-      })
-      .finally(() => setLoading(false));
+      } catch (err: unknown) {
+        if (isAxiosError(err)) {
+          if (err.response?.status === 401 || err.response?.status === 403) {
+            localStorage.removeItem('token');
+            setError('Session expirée. Veuillez vous reconnecter.');
+            redirectToLogin();
+          } else {
+            setError(err.message);
+          }
+        } else if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError('Erreur inconnue');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
   }, [navigate]);
-  
+
+
   if (loading) {
     return (
       <Box mt={4} textAlign="center">

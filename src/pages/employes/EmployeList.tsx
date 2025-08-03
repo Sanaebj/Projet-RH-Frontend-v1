@@ -22,13 +22,15 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  TextField,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import WarningAmberIcon from '@mui/icons-material/WarningAmber'; // Icône bleue
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
 const EmployeList = () => {
   const [employes, setEmployes] = useState<Employe[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedEmployeId, setSelectedEmployeId] = useState<number | null>(null);
   const navigate = useNavigate();
@@ -73,6 +75,12 @@ const EmployeList = () => {
     setSelectedEmployeId(null);
   };
 
+  const filteredEmployes = employes.filter((emp) =>
+    `${emp.nom} ${emp.prenom} ${emp.email}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
+
   const headerCellStyle = {
     color: 'white',
     fontWeight: 'bold',
@@ -92,6 +100,27 @@ const EmployeList = () => {
         <Button variant="contained" color="primary" onClick={handleCreate}>
           + Créer un employé
         </Button>
+      </Box>
+
+      <Box mb={3} display="flex" justifyContent="flex-start">
+      <TextField
+          variant="outlined"
+          placeholder="Rechercher par nom, prénom ou email"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          size="small"
+          sx={{
+            width: 300,
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            boxShadow: 1,
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': { borderColor: '#4f46e5' },
+              '&:hover fieldset': { borderColor: '#3730a3' },
+              '&.Mui-focused fieldset': { borderColor: '#3730a3' },
+            },
+          }}
+        />
       </Box>
 
       <TableContainer component={Paper}>
@@ -123,7 +152,7 @@ const EmployeList = () => {
           </TableHead>
 
           <TableBody>
-            {employes.map((emp) => (
+            {filteredEmployes.map((emp) => (
               <TableRow key={emp.id}>
                 <TableCell>{emp.matricule}</TableCell>
                 <TableCell>{emp.nom}</TableCell>
