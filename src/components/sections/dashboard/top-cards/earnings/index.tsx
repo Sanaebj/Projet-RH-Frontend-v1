@@ -1,4 +1,4 @@
-import  { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axiosInstance from '../../../../../services/axiosInstance';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -10,13 +10,17 @@ const Earnings = () => {
   const [nombreDemandes, setNombreDemandes] = useState<number>(0);
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.warn('Pas de token, utilisateur non authentifié');
+      return;
+    }
+
     axiosInstance
-      .get<number>('/demandes-documents/count/en-cours') // <-- Ici le <number>
-      .then(response => {
-        setNombreDemandes(response.data);
-      })
-      .catch(error => {
-        console.error("Erreur lors de la récupération du nombre de demandes :", error);
+      .get<number>('/demandes-documents/count/en-cours')
+      .then((response) => setNombreDemandes(response.data))
+      .catch((error) => {
+        console.error('Erreur lors de la récupération du nombre de demandes :', error);
       });
   }, []);
 
@@ -43,7 +47,7 @@ const Earnings = () => {
             Demandes RH
           </Typography>
           <Typography mt={1} variant="h3">
-            {nombreDemandes} 
+            {nombreDemandes}
           </Typography>
         </Box>
       </Stack>
