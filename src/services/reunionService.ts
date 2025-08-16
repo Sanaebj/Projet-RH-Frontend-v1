@@ -24,19 +24,7 @@ export const getAllReunions = async (): Promise<Reunion[]> => {
 };
 
 // Récupérer uniquement les réunions à venir
-export const getUpcomingReunions = async (): Promise<Reunion[]> => {
-  try {
-    const headers = getAuthHeaders();
-    console.log("Appel GET avec headers:", headers);
-    const response = await axios.get<Reunion[]>(`${API_URL}/upcoming`, {
-      headers,
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Erreur getUpcomingReunions:', error);
-    throw error;
-  }
-};
+
 export const deleteReunion = async (id: number) => {
   const response = await axiosInstance.delete(`/reunions/${id}`);
   return response.data;

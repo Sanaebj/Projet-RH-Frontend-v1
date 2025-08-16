@@ -1,5 +1,4 @@
 import  { useEffect, useState } from 'react';
-import axiosInstance from '../../../../../services/axiosInstance';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
@@ -10,15 +9,19 @@ const Earnings = () => {
   const [nombreDemandes, setNombreDemandes] = useState<number>(0);
 
   useEffect(() => {
-    axiosInstance
-      .get<number>('/demandes-documents/count/en-cours') // <-- Ici le <number>
-      .then(response => {
-        setNombreDemandes(response.data);
-      })
-      .catch(error => {
-        console.error("Erreur lors de la récupération du nombre de demandes :", error);
-      });
+    // axiosInstance
+    //   .get<number>('/demandes-documents/count/en-cours')
+    //   .then(response => {
+    //     setNombreDemandes(response.data);
+    //   })
+    //   .catch(error => {
+    //     console.error("Erreur lors de la récupération du nombre de demandes :", error);
+    //   });
+
+    // Valeur simulée pour test
+    setNombreDemandes(5);
   }, []);
+
 
   return (
     <Paper

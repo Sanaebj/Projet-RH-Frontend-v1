@@ -19,7 +19,6 @@ import {
     CartesianGrid,
   } from 'recharts';
   import { useEffect, useState } from 'react';
-  import { getUpcomingReunions } from '../../../../services/reunionService';
   import { Reunion } from '../../../../types/Reunion';
   import dayjs from 'dayjs';
   import 'dayjs/locale/fr';
@@ -41,8 +40,8 @@ import {
           }
       
           try {
-            const data = await getUpcomingReunions(); // le token est ajouté automatiquement dans les headers
-            setReunions(data);
+           // const data = [] ; // le token est ajouté automatiquement dans les headers
+            setReunions([]);
           } catch (error) {
             console.error('Erreur lors du chargement des réunions :', error);
             setReunions([]);
