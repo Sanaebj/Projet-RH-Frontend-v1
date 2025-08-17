@@ -11,23 +11,14 @@ const Earnings = () => {
 
   useEffect(() => {
     axiosInstance
-<<<<<<< HEAD
-      .get<number>('/demandes-documents/count/en-cours') // <-- Ici le <number>
-      .then(response => {
-        setNombreDemandes(response.data);
-      })
-      .catch(error => {
-        console.error("Erreur lors de la récupération du nombre de demandes :", error);
-      });
-=======
+
   .get<number>('/demandes-documents/count')
   .then((response) => setNombreDemandes(response.data))
   .catch((error) => {
     console.error('Erreur lors de la récupération du nombre de demandes :', error);
   });
 
->>>>>>> 8832e5a (Initial commit  frontend v2)
-  }, []);
+   }, []);
 
   return (
     <Paper
