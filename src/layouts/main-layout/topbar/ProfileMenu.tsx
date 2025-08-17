@@ -11,21 +11,20 @@ import ButtonBase from '@mui/material/ButtonBase';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import IconifyIcon from 'components/base/IconifyIcon';
 import ProfileImage from 'assets/images/profile.png';
-
-import { jwtDecode } from 'jwt-decode';
+import axiosInstance from 'services/axiosInstance';
 import paths from 'routes/paths';
+
+interface User {
+  nom: string;
+  prenom: string;
+  email: string;
+  role: string;
+}
 
 interface MenuItems {
   id: number;
   title: string;
   icon: string;
-}
-
-interface JwtPayload {
-  sub: string;  // ici email ou username
-  role: string;
-  exp: number;
-  // pas de nom/prenom dans ton token ?
 }
 
 const menuItems: MenuItems[] = [
@@ -35,22 +34,20 @@ const menuItems: MenuItems[] = [
 
 const ProfileMenu = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [user, setUser] = useState<User | null>(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
 
-  // On stocke ici juste le email extrait du token (sub)
-  const [email, setEmail] = useState<string>('');
-
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
+    const fetchUser = async () => {
       try {
-        const decoded = jwtDecode<JwtPayload>(token);
-        setEmail(decoded.sub);
-      } catch (e) {
-        console.error('Erreur décodage JWT', e);
+        const response = await axiosInstance.get('/users/me');
+        setUser(response.data);
+      } catch (err) {
+        console.error('Erreur récupération utilisateur', err);
       }
-    }
+    };
+    fetchUser();
   }, []);
 
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -63,17 +60,17 @@ const ProfileMenu = () => {
 
   const handleMenuItemClick = (title: string) => {
     handleProfileMenuClose();
-  
+
     if (title === 'Logout') {
       localStorage.removeItem('token');
       navigate(paths.signin);
     }
-  
+
     if (title === 'View Profile') {
-      navigate(paths.profile); // Assure-toi que paths.profile existe et pointe vers '/profile'
+      navigate(paths.profile);
     }
   };
-  
+
   return (
     <>
       <ButtonBase
@@ -86,11 +83,7 @@ const ProfileMenu = () => {
       >
         <Avatar
           src={ProfileImage}
-          sx={{
-            height: 44,
-            width: 44,
-            bgcolor: 'primary.main',
-          }}
+          sx={{ height: 44, width: 44, bgcolor: 'primary.main' }}
         />
       </ButtonBase>
 
@@ -101,10 +94,7 @@ const ProfileMenu = () => {
         onClose={handleProfileMenuClose}
         sx={{
           mt: 1.5,
-          '& .MuiList-root': {
-            p: 0,
-            width: 230,
-          },
+          '& .MuiList-root': { p: 0, width: 230 },
         }}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
@@ -114,11 +104,10 @@ const ProfileMenu = () => {
             <Avatar src={ProfileImage} sx={{ mr: 1, height: 42, width: 42 }} />
             <Stack direction="column">
               <Typography variant="body2" color="text.primary" fontWeight={600}>
-                {/* Tu peux remplacer 'Utilisateur' par nom/prenom si tu as */}
-                Utilisateur
+                {user ? `${user.nom} ${user.prenom}` : 'Utilisateur'}
               </Typography>
               <Typography variant="caption" color="text.secondary" fontWeight={400}>
-                {email}
+                {user?.email || ''}
               </Typography>
             </Stack>
           </MenuItem>
@@ -128,11 +117,7 @@ const ProfileMenu = () => {
 
         <Box p={1}>
           {menuItems.map((item) => (
-            <MenuItem
-              key={item.id}
-              onClick={() => handleMenuItemClick(item.title)}
-              sx={{ py: 1 }}
-            >
+            <MenuItem key={item.id} onClick={() => handleMenuItemClick(item.title)} sx={{ py: 1 }}>
               <ListItemIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 'h5.fontSize' }}>
                 <IconifyIcon icon={item.icon} />
               </ListItemIcon>
