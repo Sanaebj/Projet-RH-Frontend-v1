@@ -1,6 +1,4 @@
-import { Employe } from './Employe';
-
 export interface ParticipationReunion {
-    id: number;
-    employe: Employe;
+  employeId: number;
+  nomComplet?: string; // optionnel mais fourni par le backend
 }

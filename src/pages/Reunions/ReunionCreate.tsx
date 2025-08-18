@@ -34,11 +34,10 @@ const ReunionCreate: React.FC = () => {
                     'http://localhost:2233/api/employes',
                     { headers: { Authorization: token ? `Bearer ${token}` : '' } }
                 );
-                const employesAvecNomComplet = response.data.map(emp => ({
+                setEmployes(response.data.map(emp => ({
                     ...emp,
                     nomComplet: `${emp.nom} ${emp.prenom}`
-                }));
-                setEmployes(employesAvecNomComplet);
+                })));
             } catch (error) {
                 console.error("Erreur lors du chargement des employés :", error);
             }
@@ -53,7 +52,7 @@ const ReunionCreate: React.FC = () => {
         try {
             await axios.post(
                 'http://localhost:2233/api/reunions',
-                { titre, dateHeure, lieu, description, participants },
+                { titre, dateHeure, lieu, description, participantIds: participants },
                 { headers: { Authorization: token ? `Bearer ${token}` : '' } }
             );
 
@@ -67,28 +66,17 @@ const ReunionCreate: React.FC = () => {
             setDescription('');
             setParticipants([]);
 
-            // Redirige après 2 secondes
+            // Redirige vers la liste après 2 secondes
             setTimeout(() => {
                 navigate('/reunions');
             }, 2000);
-        } catch (error: unknown) {
-            if (axios.isAxiosError(error)) {
-                console.error('Erreur Axios :', error.response?.data || error.message);
-                alert('Erreur lors de la création de la réunion : ' + (error.response?.data || error.message));
-            } else if (error instanceof Error) {
-                console.error('Erreur :', error.message);
-                alert('Erreur lors de la création de la réunion : ' + error.message);
-            } else {
-                console.error('Erreur inconnue', error);
-                alert('Erreur inconnue lors de la création de la réunion.');
-            }
+        } catch (error) {
+            console.error('Erreur lors de la création de la réunion :', error);
+            alert('Erreur lors de la création de la réunion.');
         }
     };
 
-    const options: OptionType[] = employes.map(emp => ({
-        value: emp.id,
-        label: emp.nomComplet || ''
-    }));
+    const options: OptionType[] = employes.map(emp => ({ value: emp.id, label: emp.nomComplet || '' }));
 
     const selectedOptions: OptionType[] = participants
         .map(id => {

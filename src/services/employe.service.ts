@@ -14,8 +14,22 @@ const getAuthHeaders = () => {
 };
 
 export const getAllEmployes = async (): Promise<Employe[]> => {
-  const response = await axios.get<Employe[]>(API_URL, getAuthHeaders());
-  return response.data;
+  const response = await axios.get(API_URL, getAuthHeaders());
+
+  const data = response.data;
+
+  // Cas 1 : le backend retourne directement un tableau d'employés
+  if (Array.isArray(data)) {
+    return data;
+  }
+
+  // Cas 2 : le backend retourne un objet pageable (Spring Data)
+  if (data && Array.isArray(data.content)) {
+    return data.content;
+  }
+
+  // Cas 3 : aucun résultat
+  return [];
 };
 
 export const getEmployeById = async (id: number): Promise<Employe> => {

@@ -105,7 +105,7 @@ const EmployeList = () => {
       <Box mb={3} display="flex" justifyContent="flex-start">
       <TextField
           variant="outlined"
-          placeholder="Rechercher"
+          placeholder="Rechercher par nom, prénom ou email"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           size="small"
