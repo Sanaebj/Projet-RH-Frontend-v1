@@ -58,7 +58,7 @@ const sitemap: MenuItem[] = [
     icon: 'ic:outline-calendar-today',
   },
   {
-    id: 'absences',
+    id: 'pointage',
     subheader: 'Pointage',
     path: '/pointage',
     icon: 'material-symbols:account-balance-wallet-outline',

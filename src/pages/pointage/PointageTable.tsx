@@ -5,19 +5,23 @@ import axiosInstance from '../../services/axiosInstance';
 
 const PointageTable: React.FC = () => {
   const [pointages, setPointages] = useState<PointageJour[]>([]);
-  const [loading ] = useState<boolean>(true);
+
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     axiosInstance
-      .get<PointageJour[]>('/pointage/jour')
-      .then((res) => {
-        setPointages(res.data); // res.data est maintenant reconnu comme PointageJour[]
-      })
-      .catch((err) => {
-        console.error("Erreur chargement pointages:", err);
-      });
+        .get<PointageJour[]>('/pointage/jour')
+        .then((res) => {
+          setPointages(res.data);
+          setLoading(false); // très important !
+        })
+        .catch((err) => {
+          console.error("Erreur chargement pointages:", err);
+          setLoading(false);
+        });
   }, []);
-  
+
+
   if (loading) {
     return (
       <Typography variant="body1" color="textSecondary">
