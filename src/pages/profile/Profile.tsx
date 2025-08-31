@@ -47,7 +47,7 @@ const Profile = () => {
         setFormData({ ...response.data, password: '' }); // password vide par défaut
         setError(null);
       } catch (err: unknown) {
-        if (isAxiosError(err)) {
+        if (isAxiosError(err)) {                             
           if (err.response?.status === 401 || err.response?.status === 403) {
             localStorage.removeItem('token');
             setError('Session expirée. Veuillez vous reconnecter.');
