@@ -120,7 +120,7 @@ const Signin = () => {
           value={user.username}
           onChange={handleInputChange}
           variant="filled"
-          placeholder="Nom d'utilisateur"
+          placeholder="Email"
           autoComplete="username"
           fullWidth
           autoFocus

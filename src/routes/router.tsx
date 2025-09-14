@@ -19,6 +19,7 @@ const ReunionCreate = lazy(() => import('../pages/Reunions/ReunionCreate'));
 const ReunionList = lazy(() => import('../pages/Reunions/ReunionList'));
 const PointageTable = lazy(() => import('pages/pointage/PointageTable'));
 const Profile = lazy(() => import('pages/profile/Profile'));
+const DashboardEmp = lazy(() => import('../SessionEmploye/DashboardEmp'));
 
 const router = createBrowserRouter(
   [
@@ -51,6 +52,8 @@ const router = createBrowserRouter(
             { path: 'pointage', element: <PointageTable /> },
             { path: 'profile', element: <Profile /> },
             { path: 'employes/edit/:id', element: <UpdateEmploye /> },
+            { path: 'employee/dashboard', element: <DashboardEmp /> },
+
 
           ],
         },
