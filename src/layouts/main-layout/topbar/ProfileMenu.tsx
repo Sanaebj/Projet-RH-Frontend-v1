@@ -12,6 +12,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import IconifyIcon from 'components/base/IconifyIcon';
 import ProfileImage from 'assets/images/profile.png';
 import axiosInstance from 'services/axiosInstance';
+import { decodeToken, TokenPayload } from 'services/decodeToken';
 import paths from 'routes/paths';
 
 interface User {
@@ -35,19 +36,27 @@ const menuItems: MenuItems[] = [
 const ProfileMenu = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [user, setUser] = useState<User | null>(null);
-  const open = Boolean(anchorEl);
+  const [userRole, setUserRole] = useState<string>("");
   const navigate = useNavigate();
+  const open = Boolean(anchorEl);
 
+  // Charger l'utilisateur et le rôle
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await axiosInstance.get('/users/me');
-        setUser(response.data);
-      } catch (err) {
-        console.error('Erreur récupération utilisateur', err);
-      }
-    };
-    fetchUser();
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const decoded: TokenPayload = decodeToken(token);
+      setUserRole(decoded.role?.toUpperCase() || "");
+
+      axiosInstance.get('/users/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(res => setUser(res.data))
+      .catch(err => console.error('Erreur récupération utilisateur', err));
+    } catch (err) {
+      console.error('Erreur décodage token', err);
+    }
   }, []);
 
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -64,10 +73,17 @@ const ProfileMenu = () => {
     if (title === 'Logout') {
       localStorage.removeItem('token');
       navigate(paths.signin);
+      return;
     }
 
     if (title === 'View Profile') {
-      navigate(paths.profile);
+      if (userRole === 'EMPLOYE') {
+        navigate('/profile-employee'); // Redirection vers ProfileEmployee
+      } else if (userRole === 'ADMIN') {
+        navigate(paths.profile); // Redirection vers profil admin
+      } else {
+        console.warn('Rôle non autorisé pour voir le profil');
+      }
     }
   };
 
@@ -92,10 +108,7 @@ const ProfileMenu = () => {
         id="account-menu"
         open={open}
         onClose={handleProfileMenuClose}
-        sx={{
-          mt: 1.5,
-          '& .MuiList-root': { p: 0, width: 230 },
-        }}
+        sx={{ mt: 1.5, '& .MuiList-root': { p: 0, width: 230 } }}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
@@ -117,7 +130,11 @@ const ProfileMenu = () => {
 
         <Box p={1}>
           {menuItems.map((item) => (
-            <MenuItem key={item.id} onClick={() => handleMenuItemClick(item.title)} sx={{ py: 1 }}>
+            <MenuItem
+              key={item.id}
+              onClick={() => handleMenuItemClick(item.title)}
+              sx={{ py: 1 }}
+            >
               <ListItemIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 'h5.fontSize' }}>
                 <IconifyIcon icon={item.icon} />
               </ListItemIcon>

@@ -10,7 +10,6 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
-    console.log('Token envoyé avec la requête :', token);
     if (token) {
       config.headers = config.headers || {};
       config.headers.Authorization = `Bearer ${token}`;
@@ -24,17 +23,6 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response) {
-      const status = error.response.status;
-      console.log('Erreur API status :', status);
-
-      if (status === 401 || status === 403) {
-        // Optionnel : tu peux afficher un message ou déclencher une action
-        console.warn('Accès refusé par le serveur, token peut-être expiré.');
-        // Ne pas supprimer automatiquement le token, laisser l'utilisateur décider
-        // window.location.href = '/venus/auth/signin'; // Décommenter si tu veux forcer la redirection
-      }
-    }
     return Promise.reject(error);
   },
 );
