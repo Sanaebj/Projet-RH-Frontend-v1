@@ -11,7 +11,7 @@ import TextField from '@mui/material/TextField';
 import Checkbox from '@mui/material/Checkbox';
 import IconifyIcon from 'components/base/IconifyIcon';
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
+import jwtDecode from 'jwt-decode';
 
 interface User {
   username: string;
