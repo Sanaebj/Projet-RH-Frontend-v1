@@ -1,4 +1,3 @@
-
 export interface SubMenuItem {
   name: string;
   pathName: string;
@@ -44,7 +43,12 @@ const sitemapEmp: MenuItem[] = [
     path: '/employee/reunions',
     icon: 'material-symbols:local-library-outline',
   },
-
+  {
+    id: 'solde-conges', // <-- nouvel item
+    subheader: 'Solde de congés',
+    path: '/employee/conges', // <-- page qui affichera le solde
+    icon: 'material-symbols:paid-outline',
+  },
 ];
 
 export default sitemapEmp;
