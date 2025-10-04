@@ -19,8 +19,8 @@ const ReunionCreate = lazy(() => import('../pages/Reunions/ReunionCreate'));
 const ReunionList = lazy(() => import('../pages/Reunions/ReunionList'));
 const PointageTable = lazy(() => import('pages/pointage/PointageTable'));
 const Profile = lazy(() => import('pages/profile/Profile'));
-const DashboardEmp = lazy(() => import('../SessionEmploye/DashboardEmp'));
-const DemandeConge = lazy(() => import('../SessionEmploye/DemandeConge'));
+const DashboardEmp = lazy(() => import('../SessionEmploye/pages/dashboard/DashboardEmp.tsx'));
+const DemandeConge = lazy(() => import('../SessionEmploye/pages/dashboard/DemandeConge.tsx'));
 
 const router = createBrowserRouter(
   [

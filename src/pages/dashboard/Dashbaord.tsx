@@ -1,9 +1,9 @@
-import GrapheConges from "../../components/sections/dashboard/conge/TableauConges";
 import Grid from "@mui/material/Grid";
 import TopCards from "components/sections/dashboard/top-cards";
 import AvatarCard from "components/sections/dashboard/avatar-card";
 import MeetingsListCard from "components/sections/dashboard/total-spent/MeetingsListCard.tsx";
-  
+import GrapheConges from "../../components/sections/dashboard/conge/TableauConges";
+
 const Dashbaord = () => {
   return (
     <Grid container spacing={2.5}>
@@ -18,14 +18,12 @@ const Dashbaord = () => {
       <Grid item xs={12} md={4}>
         <AvatarCard />
       </Grid>
+
+
+        <Grid item xs={12} md={8}>
+            <GrapheConges />
+        </Grid>
  
- 
- 
- 
-      {/* 👉 Ici tu ajoutes ton GrapheConges */}
-      <Grid item xs={12} md={8}>
-        <GrapheConges />
-      </Grid>
 
      
     </Grid>

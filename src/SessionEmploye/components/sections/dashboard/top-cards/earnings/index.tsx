@@ -1,0 +1,65 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import IconifyIcon from "components/base/IconifyIcon";
+
+const Earnings = () => {
+  const [nombreDemandes, setNombreDemandes] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    setLoading(true);
+
+    axios
+        .get<number>("http://localhost:2233/api/demandes-documents/count")
+        .then((response) => {
+          setNombreDemandes(response.data);
+          setError("");
+        })
+        .catch((err) => {
+          console.error("❌ Erreur lors de la récupération du nombre de demandes :", err);
+          setError("Impossible de charger les demandes RH.");
+        })
+        .finally(() => setLoading(false));
+  }, []);
+
+  return (
+      <Paper
+          component={Stack}
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ px: 2, py: 3 }}
+      >
+        <Stack alignItems="center" justifyContent="flex-start" spacing={2}>
+          <Stack
+              alignItems="center"
+              justifyContent="center"
+              height={56}
+              width={56}
+              bgcolor="info.main"
+              borderRadius="50%"
+          >
+            <IconifyIcon
+                icon="ic:round-bar-chart"
+                color="primary.main"
+                fontSize="h3.fontSize"
+            />
+          </Stack>
+          <Box>
+            <Typography variant="body2" color="text.disabled" fontWeight={500}>
+              Demandes RH
+            </Typography>
+            <Typography mt={1} variant="h3">
+              {loading ? "Chargement..." : error ? error : nombreDemandes}
+            </Typography>
+          </Box>
+        </Stack>
+      </Paper>
+  );
+};
+
+export default Earnings;

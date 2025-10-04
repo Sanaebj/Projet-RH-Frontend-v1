@@ -11,191 +11,184 @@ import TextField from '@mui/material/TextField';
 import Checkbox from '@mui/material/Checkbox';
 import IconifyIcon from 'components/base/IconifyIcon';
 import axios from 'axios';
-import jwtDecode from 'jwt-decode';
+import { decodeToken, TokenPayload } from '../../services/decodeToken';  // ✅ ton service
 
 interface User {
-  username: string;
-  password: string;
-}
-
-interface JwtPayload {
-  sub: string;
-  role: string;
-  exp: number;
+    username: string;
+    password: string;
 }
 
 function isAxiosError(error: unknown): error is { response?: { data?: string } } {
-  return typeof error === 'object' && error !== null && 'response' in error;
+    return typeof error === 'object' && error !== null && 'response' in error;
 }
 
 const Signin = () => {
-  const [user, setUser] = useState<User>({ username: '', password: '' });
-  const [showPassword, setShowPassword] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+    const [user, setUser] = useState<User>({ username: '', password: '' });
+    const [showPassword, setShowPassword] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
-  };
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setUser({ ...user, [e.target.name]: e.target.value });
+    };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setErrorMessage('');
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setErrorMessage('');
 
-    console.log("➡️ Tentative de login vers http://localhost:2233/auth/login", user);
+        console.log("➡️ Tentative de login vers http://localhost:2233/auth/login", user);
 
-
-    try {
-      const response = await axios.post(
-        'http://localhost:2233/auth/login',
-        {
-          username: user.username,
-          password: user.password,
-        }
-      );
-
-      console.log('✅ Réponse API :', response);
-
-      const token = response.data;
-      console.log('🔹 Token reçu :', token);
-
-      if (typeof token === 'string') {
-        localStorage.setItem('token', token);
-
-        let decoded: JwtPayload;
         try {
-          decoded = jwtDecode<JwtPayload>(token);
-          console.log('✅ JWT décodé :', decoded);
-        } catch (decodeError) {
-          console.error('❌ Erreur lors du décodage du token :', decodeError);
-          setErrorMessage('Token invalide.');
-          return;
+            const response = await axios.post(
+                'http://localhost:2233/auth/login',
+                {
+                    username: user.username,
+                    password: user.password,
+                }
+            );
+
+            console.log('✅ Réponse API :', response);
+
+            const token = response.data;
+            console.log('🔹 Token reçu :', token);
+
+            if (typeof token === 'string') {
+                localStorage.setItem('token', token);
+
+                let decoded: TokenPayload;
+                try {
+                    decoded = decodeToken(token);   // ✅ ton decodeToken
+                    console.log('✅ JWT décodé :', decoded);
+                } catch (decodeError) {
+                    console.error('❌ Erreur lors du décodage du token :', decodeError);
+                    setErrorMessage('Token invalide.');
+                    return;
+                }
+
+                const userRole = decoded.role;
+                console.log('🔹 Rôle extrait :', userRole);
+
+                const baseUrl = '/venus';
+
+                if (userRole === 'ADMIN') {
+                    window.location.href = `${baseUrl}`;
+                } else if (userRole === 'EMPLOYE') {
+                    window.location.href = `${baseUrl}/employee/dashboard`;
+                }
+
+            } else {
+                console.error('❌ Réponse API inattendue :', response.data);
+                setErrorMessage("Le token reçu n'est pas valide.");
+            }
+        } catch (error: unknown) {
+            console.error('❌ Erreur complète :', error);
+
+            if (isAxiosError(error)) {
+                console.error('🔹 Détails erreur Axios :', error.response);
+                setErrorMessage(error.response?.data || 'Erreur lors de la connexion.');
+            } else if (error instanceof Error) {
+                console.error('🔹 Erreur JS :', error.message);
+                setErrorMessage(error.message);
+            } else {
+                setErrorMessage('Erreur inconnue.');
+            }
         }
+    };
 
-        const userRole = decoded.role;
-        console.log('🔹 Rôle extrait :', userRole);
+    return (
+        <>
+            <Typography align="center" variant="h4">
+                Connexion
+            </Typography>
+            <Typography mt={1.5} align="center" variant="body2">
+                Bienvenue, veuillez vous connecter
+            </Typography>
 
-        const baseUrl = '/venus';
+            <Divider sx={{ my: 4 }}>Connexion manuelle</Divider>
 
-        if (userRole === 'ADMIN') {
-          window.location.href = `${baseUrl}`;
-        } else if (userRole === 'EMPLOYE') {
-          window.location.href = `${baseUrl}/employee/dashboard`;
-        }
-        
-      } else {
-        console.error('❌ Réponse API inattendue :', response.data);
-        setErrorMessage("Le token reçu n'est pas valide.");
-      }
-    } catch (error: unknown) {
-      console.error('❌ Erreur complète :', error);
+            <Stack component="form" mt={3} onSubmit={handleSubmit} direction="column" gap={2}>
+                <TextField
+                    id="username"
+                    name="username"
+                    type="text"
+                    value={user.username}
+                    onChange={handleInputChange}
+                    variant="filled"
+                    placeholder="Email"
+                    autoComplete="username"
+                    fullWidth
+                    autoFocus
+                    required
+                    InputProps={{
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <IconifyIcon icon="ic:baseline-person" />
+                            </InputAdornment>
+                        ),
+                    }}
+                />
+                <TextField
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={user.password}
+                    onChange={handleInputChange}
+                    variant="filled"
+                    placeholder="Mot de passe"
+                    autoComplete="current-password"
+                    fullWidth
+                    required
+                    InputProps={{
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <IconifyIcon icon="ic:outline-lock" />
+                            </InputAdornment>
+                        ),
+                        endAdornment: (
+                            <InputAdornment
+                                position="end"
+                                sx={{
+                                    opacity: user.password ? 1 : 0,
+                                    pointerEvents: user.password ? 'auto' : 'none',
+                                }}
+                            >
+                                <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    edge="end"
+                                >
+                                    <IconifyIcon
+                                        icon={showPassword ? 'ic:outline-visibility' : 'ic:outline-visibility-off'}
+                                        color="neutral.light"
+                                    />
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
+                />
 
-      if (isAxiosError(error)) {
-        console.error('🔹 Détails erreur Axios :', error.response);
-        setErrorMessage(error.response?.data || 'Erreur lors de la connexion.');
-      } else if (error instanceof Error) {
-        console.error('🔹 Erreur JS :', error.message);
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage('Erreur inconnue.');
-      }
-    }
-  };
+                <Stack mt={-1.25} alignItems="center" justifyContent="space-between">
+                    <FormControlLabel
+                        control={<Checkbox id="checkbox" name="checkbox" size="medium" color="primary" />}
+                        label="Se souvenir de moi"
+                        sx={{ ml: -0.75 }}
+                    />
+                    <Link href="#!" fontSize="body2.fontSize">
+                        Mot de passe oublié ?
+                    </Link>
+                </Stack>
 
-  return (
-    <>
-      <Typography align="center" variant="h4">
-        Connexion
-      </Typography>
-      <Typography mt={1.5} align="center" variant="body2">
-        Bienvenue, veuillez vous connecter
-      </Typography>
+                {errorMessage && (
+                    <Typography color="error" variant="body2" align="center">
+                        ❌ {errorMessage}
+                    </Typography>
+                )}
 
-      <Divider sx={{ my: 4 }}>Connexion manuelle</Divider>
-
-      <Stack component="form" mt={3} onSubmit={handleSubmit} direction="column" gap={2}>
-        <TextField
-          id="username"
-          name="username"
-          type="text"
-          value={user.username}
-          onChange={handleInputChange}
-          variant="filled"
-          placeholder="Email"
-          autoComplete="username"
-          fullWidth
-          autoFocus
-          required
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <IconifyIcon icon="ic:baseline-person" />
-              </InputAdornment>
-            ),
-          }}
-        />
-        <TextField
-          id="password"
-          name="password"
-          type={showPassword ? 'text' : 'password'}
-          value={user.password}
-          onChange={handleInputChange}
-          variant="filled"
-          placeholder="Mot de passe"
-          autoComplete="current-password"
-          fullWidth
-          required
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <IconifyIcon icon="ic:outline-lock" />
-              </InputAdornment>
-            ),
-            endAdornment: (
-              <InputAdornment
-                position="end"
-                sx={{
-                  opacity: user.password ? 1 : 0,
-                  pointerEvents: user.password ? 'auto' : 'none',
-                }}
-              >
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={() => setShowPassword(!showPassword)}
-                  edge="end"
-                >
-                  <IconifyIcon
-                    icon={showPassword ? 'ic:outline-visibility' : 'ic:outline-visibility-off'}
-                    color="neutral.light"
-                  />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-
-        <Stack mt={-1.25} alignItems="center" justifyContent="space-between">
-          <FormControlLabel
-            control={<Checkbox id="checkbox" name="checkbox" size="medium" color="primary" />}
-            label="Se souvenir de moi"
-            sx={{ ml: -0.75 }}
-          />
-          <Link href="#!" fontSize="body2.fontSize">
-            Mot de passe oublié ?
-          </Link>
-        </Stack>
-
-        {errorMessage && (
-          <Typography color="error" variant="body2" align="center">
-            ❌ {errorMessage}
-          </Typography>
-        )}
-
-        <Button type="submit" variant="contained" size="medium" fullWidth>
-          Connexion
-        </Button>
-      </Stack>
-    </>
-  );
+                <Button type="submit" variant="contained" size="medium" fullWidth>
+                    Connexion
+                </Button>
+            </Stack>
+        </>
+    );
 };
 
 export default Signin;

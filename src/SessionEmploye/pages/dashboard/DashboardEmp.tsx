@@ -1,11 +1,12 @@
 import { useEffect, useState, FC } from "react";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import TopCards from "components/sections/dashboard/top-cards";
+import TopCardsEmp from "../../components/sections/dashboard/top-cards";
+
 import AvatarCard from "components/sections/dashboard/avatar-card";
-import MeetingsListCard from "components/sections/dashboard/total-spent/MeetingsListCard";
- import EmployeeLayout from "./EmployeeLayout";
-import { decodeToken, TokenPayload } from "../services/decodeToken";
+import MeetingsListCard from "components/sections/dashboard/total-spent/MeetingsListCard.tsx";
+import EmployeeLayout from "../../EmployeeLayout.tsx";
+import { decodeToken, TokenPayload } from "../../../services/decodeToken.ts";
 
 const DashboardEmp: FC = () => {
   const [employeeName, setEmployeeName] = useState("");
@@ -46,12 +47,13 @@ const DashboardEmp: FC = () => {
 
       <Grid container spacing={2.5}>
         <Grid item xs={12}>
-          <TopCards />
+          <TopCardsEmp />
         </Grid>
 
         <Grid item xs={12} md={8}>
           <MeetingsListCard />
         </Grid>
+
 
         <Grid item xs={12} md={4}>
           <AvatarCard />
