@@ -1,13 +1,13 @@
 import { Suspense, lazy } from 'react';
 import { Navigate, Outlet, createBrowserRouter } from 'react-router-dom';
 import MainLayout from 'layouts/main-layout';
+import AuthLayout from 'layouts/auth-layout';
 import Splash from 'components/loader/Splash';
 import PageLoader from 'components/loader/PageLoader';
-import AuthLayout from 'layouts/auth-layout';
 import PrivateRoute from 'components/PrivateRoute';
-import paths, { rootPaths } from './paths';
-
 const App = lazy(() => import('App'));
+
+// Pages Admin
 const Dashboard = lazy(() => import('pages/dashboard/Dashbaord'));
 const EmployeList = lazy(() => import('pages/employes/EmployeList'));
 const EmployeCreate = lazy(() => import('pages/employes/EmployeCreate'));
@@ -17,20 +17,34 @@ const ReunionCreate = lazy(() => import('pages/Reunions/ReunionCreate'));
 const ListeDemandes = lazy(() => import('pages/Documents/ListeDemandes'));
 const PointageTable = lazy(() => import('pages/pointage/PointageTable'));
 const Profile = lazy(() => import('pages/profile/Profile'));
+
+// Pages Employé
+const DashboardEmp = lazy(() => import('../SessionEmploye/pages/dashboard/DashboardEmp'));
+const DemandesPage = lazy(() => import('../SessionEmploye/pages/dashboard/DemandesPage'));
+const DemandeDocument = lazy(() => import('../SessionEmploye/pages/dashboard/DemandeDocument'));
+const DemandeConge = lazy(() => import('../SessionEmploye/pages/dashboard/DemandeConge'));
+
+// Auth
 const Signin = lazy(() => import('pages/authentication/Signin'));
 
-// Routes Admin
 const router = createBrowserRouter(
   [
     {
-      element: <Suspense fallback={<Splash />}><App /></Suspense>,
+      element: (
+        <Suspense fallback={<Splash />}>
+          <App />
+        </Suspense>
+      ),
       children: [
+        // Routes Admin
         {
           path: '/',
           element: (
-            <PrivateRoute>
+            <PrivateRoute allowedRoles={['ADMIN']} signinPath="/auth/signin">
               <MainLayout>
-                <Suspense fallback={<PageLoader />}><Outlet /></Suspense>
+                <Suspense fallback={<PageLoader />}>
+                  <Outlet />
+                </Suspense>
               </MainLayout>
             </PrivateRoute>
           ),
@@ -46,16 +60,44 @@ const router = createBrowserRouter(
             { path: 'profile', element: <Profile /> },
           ],
         },
+
+        // Routes Employé
         {
-          path: rootPaths.authRoot,
-          element: <AuthLayout><Outlet /></AuthLayout>,
-          children: [{ path: paths.signin, element: <Signin /> }],
+          path: '/employee',
+          element: (
+            <PrivateRoute allowedRoles={['EMPLOYE']} signinPath="/auth/signin">
+              <MainLayout>
+                <Suspense fallback={<PageLoader />}>
+                  <Outlet />
+                </Suspense>
+              </MainLayout>
+            </PrivateRoute>
+          ),
+          children: [
+            { path: 'dashboard', element: <DashboardEmp /> },
+            { path: 'demandes', element: <DemandesPage /> },
+            { path: 'demandes/documents', element: <DemandeDocument /> },
+            { path: 'demandes/conges', element: <DemandeConge /> },
+          ],
         },
-        { path: '*', element: <Navigate to={paths.signin} replace /> },
+
+        // Auth
+        {
+          path: '/auth',
+          element: (
+            <AuthLayout>
+              <Outlet />
+            </AuthLayout>
+          ),
+          children: [{ path: 'signin', element: <Signin /> }],
+        },
+
+        // 404 / fallback
+        { path: '*', element: <Navigate to="/auth/signin" replace /> },
       ],
     },
   ],
-  { basename: '/venus' }
+  { basename: '/venus' },
 );
 
 export default router;
