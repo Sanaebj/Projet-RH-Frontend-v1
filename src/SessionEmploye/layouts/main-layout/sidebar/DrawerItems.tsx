@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom'; // ajoute useNavigate pour navigation
+import { useLocation, useNavigate } from 'react-router-dom';
 import { fontFamily } from 'theme/typography';
 import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
@@ -12,19 +12,16 @@ import CollapseListItem from './list-items/CollapseListItem';
 import Image from 'components/base/Image';
 import IconifyIcon from 'components/base/IconifyIcon';
 import LogoImg from 'assets/images/img.ico';
-import sitemap from 'routes/sitemap';
+import sitemapEmp from '../../../routes/sitemapEmp'; // ✅ corriger l'import
 
-const DrawerItems = () => {
+const DrawerItems: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
   // Fonction de déconnexion
   const handleLogout = () => {
-    // 1. Supprime le token ou toute donnée d'authentification
-    localStorage.removeItem('token');
-
-    // 2. Redirige vers la page de login
-    navigate('/auth/signin', { replace: true });
+    localStorage.removeItem('token'); // supprime le token
+    navigate('/auth/signin', { replace: true }); // redirige vers login
   };
 
   return (
@@ -64,7 +61,7 @@ const DrawerItems = () => {
               fontWeight={500}
               fontFamily={fontFamily.poppins}
             >
-              Manager
+              Employé
             </Typography>
           </Box>
         </ButtonBase>
@@ -72,7 +69,7 @@ const DrawerItems = () => {
 
       {/* Navigation list */}
       <List component="nav" sx={{ mt: 2.5, mb: 10, px: 4.5 }}>
-        {sitemap.map((route) =>
+        {sitemapEmp.map((route) =>
           route.items ? (
             <CollapseListItem
               key={route.id}
@@ -80,12 +77,8 @@ const DrawerItems = () => {
               active={route.path ? location.pathname.startsWith(route.path) : false}
             />
           ) : (
-            <ListItem
-              key={route.id}
-              {...route}
-              active={location.pathname === route.path}
-            />
-          )
+            <ListItem key={route.id} {...route} active={location.pathname === route.path} />
+          ),
         )}
       </List>
 
@@ -94,7 +87,7 @@ const DrawerItems = () => {
         <Button
           variant="text"
           startIcon={<IconifyIcon icon="ic:baseline-logout" />}
-          onClick={handleLogout}  // <-- Activation du clic ici
+          onClick={handleLogout}
         >
           Log Out
         </Button>

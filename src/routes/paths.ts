@@ -4,7 +4,6 @@ export const rootPaths = {
   authRoot: 'auth',
   errorRoot: 'error',
   profile: '/profile',
-
 };
 
 export default {
@@ -19,5 +18,4 @@ export default {
   404: `/${rootPaths.errorRoot}/404`,
 
   profile: rootPaths.profile,
-
 };

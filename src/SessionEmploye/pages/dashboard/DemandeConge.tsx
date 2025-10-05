@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Container, Typography, TextField, Button, Paper, Box } from "@mui/material";
-import EmployeeLayout from "../../EmployeeLayout.tsx";
 
 export default function DemandeConge() {
   const [dateDebut, setDateDebut] = useState("");
@@ -8,7 +7,7 @@ export default function DemandeConge() {
   const [message, setMessage] = useState("");
   const [soldeConge, setSoldeConge] = useState(0);
 
-  const employeId = 1; // 🔹 Ici tu peux récupérer l'ID depuis le contexte utilisateur connecté
+  const employeId = 1; // 🔹 À remplacer par l'ID réel de l'employé connecté
 
   // ⚡ Récupérer le solde de congés dès que le composant est monté
   useEffect(() => {
@@ -17,7 +16,6 @@ export default function DemandeConge() {
       .then(data => setSoldeConge(Number(data)))
       .catch(err => console.error("Erreur récupération solde congés :", err));
   }, [employeId]);
-  
 
   const handleSubmit = () => {
     if (!dateDebut || !dateFin) {
@@ -45,15 +43,14 @@ export default function DemandeConge() {
         setDateFin("");
         // 🔹 Actualiser le solde après la demande
         fetch(`http://localhost:2233/api/conges/solde/${employeId}`)
-        .then(res => res.json())
-        .then(data => setSoldeConge(data))
-      
+          .then(res => res.text())
+          .then(data => setSoldeConge(Number(data)));
       })
       .catch(() => setMessage("❌ Erreur lors de l'envoi de la demande."));
   };
 
   return (
-    <EmployeeLayout>
+    <Container maxWidth="sm" sx={{ mt: 3 }}>
       <Typography variant="h4" gutterBottom>
         Demande de congé
       </Typography>
@@ -62,42 +59,40 @@ export default function DemandeConge() {
         Solde actuel de congés : {soldeConge} jours
       </Typography>
 
-      <Container maxWidth="sm" sx={{ mt: 3 }}>
-        <Paper sx={{ p: 4 }}>
-          <TextField
-            label="Date de début"
-            type="date"
-            fullWidth
-            margin="normal"
-            InputLabelProps={{ shrink: true }}
-            value={dateDebut}
-            onChange={(e) => setDateDebut(e.target.value)}
-          />
-          <TextField
-            label="Date de fin"
-            type="date"
-            fullWidth
-            margin="normal"
-            InputLabelProps={{ shrink: true }}
-            value={dateFin}
-            onChange={(e) => setDateFin(e.target.value)}
-          />
+      <Paper sx={{ p: 4 }}>
+        <TextField
+          label="Date de début"
+          type="date"
+          fullWidth
+          margin="normal"
+          InputLabelProps={{ shrink: true }}
+          value={dateDebut}
+          onChange={(e) => setDateDebut(e.target.value)}
+        />
+        <TextField
+          label="Date de fin"
+          type="date"
+          fullWidth
+          margin="normal"
+          InputLabelProps={{ shrink: true }}
+          value={dateFin}
+          onChange={(e) => setDateFin(e.target.value)}
+        />
 
-          {message && (
-            <Typography
-              sx={{ mt: 2, color: message.includes("✅") ? "green" : "red" }}
-            >
-              {message}
-            </Typography>
-          )}
+        {message && (
+          <Typography
+            sx={{ mt: 2, color: message.includes("✅") ? "green" : "red" }}
+          >
+            {message}
+          </Typography>
+        )}
 
-          <Box sx={{ mt: 3, textAlign: "right" }}>
-            <Button variant="contained" color="primary" onClick={handleSubmit}>
-              Envoyer la demande
-            </Button>
-          </Box>
-        </Paper>
-      </Container>
-    </EmployeeLayout>
+        <Box sx={{ mt: 3, textAlign: "right" }}>
+          <Button variant="contained" color="primary" onClick={handleSubmit}>
+            Envoyer la demande
+          </Button>
+        </Box>
+      </Paper>
+    </Container>
   );
 }

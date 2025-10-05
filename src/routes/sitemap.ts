@@ -1,4 +1,4 @@
-import paths from 'routes/paths';
+import paths from './paths';
 
 export interface SubMenuItem {
   name: string;
@@ -20,50 +20,17 @@ export interface MenuItem {
 }
 
 const sitemap: MenuItem[] = [
-  {
-    id: 'dashboard',
-    subheader: 'Dashboard',
-    path: '/',
-    icon: 'ri:dashboard-fill',
-    active: true,
-  },
-  {
-    id: 'employes',
-    subheader: 'Employes',
-    path: '/employes',
-    icon: 'ic:baseline-show-chart',
-  },
-  {
-    id: 'reunions',
-    subheader: 'Réunions',
-    path: '/reunions',
-    icon: 'material-symbols:local-library-outline',
-  },
+  { id: 'dashboard', subheader: 'Dashboard', path: '/', icon: 'ri:dashboard-fill', active: true },
+  { id: 'employes', subheader: 'Employes', path: '/employes', icon: 'ic:baseline-show-chart' },
+  { id: 'reunions', subheader: 'Réunions', path: '/reunions', icon: 'material-symbols:local-library-outline' },
+  { id: 'demandes', subheader: 'Demandes', path: '/demandes', icon: 'ic:outline-calendar-today' },
+  { id: 'pointage', subheader: 'Pointage', path: '/pointage', icon: 'material-symbols:account-balance-wallet-outline' },
   {
     id: 'authentication',
     subheader: 'Authentication',
     icon: 'ic:round-security',
-    items: [
-      {
-        name: 'Sign In',
-        pathName: 'signin',
-        path: paths.signin,
-      },
-    ],
+    items: [{ name: 'Sign In', pathName: 'signin', path: paths.signin }],
   },
-  {
-    id: 'demandes',
-    subheader: 'Demandes',
-    path: '/demandes',
-    icon: 'ic:outline-calendar-today',
-  },
-  {
-    id: 'pointage',
-    subheader: 'Pointage',
-    path: '/pointage',
-    icon: 'material-symbols:account-balance-wallet-outline',
-  },
- 
 ];
 
 export default sitemap;
